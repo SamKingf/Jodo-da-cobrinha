@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/128/3292/3292221.png">
     <title>JOGO DA COBRINHA - PREMIUM EDITION</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,6 +22,38 @@
             overscroll-behavior: none; 
             display: flex;
             flex-direction: column;
+        }
+
+        /* FAIXA ANIMADA DE UPDATE MOBILE */
+        .update-marquee {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 8px 0;
+            overflow: hidden;
+            z-index: 20000;
+            pointer-events: none;
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .update-marquee span {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marqueeText 12s linear infinite;
+        }
+
+        @keyframes marqueeText {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
         }
 
         /* TELA DE DISPOSITIVO */
@@ -253,6 +286,17 @@
             transform: translateY(-3px);
             box-shadow: 0 15px 25px -5px rgba(59, 130, 246, 0.6);
             background: linear-gradient(135deg, #60a5fa, #1d4ed8);
+        }
+
+        .multiplayer-btn {
+            background: linear-gradient(135deg, #a855f7, #7e22ce);
+            box-shadow: 0 10px 20px -5px rgba(168, 85, 247, 0.4);
+        }
+
+        .multiplayer-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px -5px rgba(168, 85, 247, 0.6);
+            background: linear-gradient(135deg, #c084fc, #7e22ce);
         }
 
         .btn-desc {
@@ -504,6 +548,10 @@
 </head>
 <body>
 
+    <div class="update-marquee">
+        <span>⚡ Nova Update do Multiplayer ⚡</span>
+    </div>
+
     <div id="deviceScreen">
         <div class="start-container">
             <h2>Dispositivo</h2>
@@ -576,6 +624,19 @@
                         </ul>
                     </div>
                 </button>
+
+                <button id="multiplayerBtn" class="start-btn multiplayer-btn" onclick="iniciarJogoCompleto('multiplayer')">
+                    <i class="fa-solid fa-users"></i> Multiplayer Local <span class="btn-desc">(Alvo: 500 pts)</span>
+                    
+                    <div class="btn-tooltip">
+                        <ul>
+                            <li>🎮 <strong>P1:</strong> Joga usando W A S D.</li>
+                            <li>🎮 <strong>P2:</strong> Joga usando I J K L.</li>
+                            <li>🏁 <strong>Objetivo:</strong> Corrida de pontos! O primeiro a alcançar 500 pontos vence.</li>
+                            <li>🧱 <strong>Paredes de Aço:</strong> Bater na parede não te mata, mas você fica preso.</li>
+                        </ul>
+                    </div>
+                </button>
             </div>
             
             <div class="instructions-text">
@@ -599,7 +660,7 @@
 
     <div id="victoryModal">
         <h2>🏆 VOCÊ GANHOU! 🏆</h2>
-        <p>Incrível! Você completou o modo normal atingindo <span id="victoryScore">0</span> pontos em <span id="victoryTime">00:00</span>!</p>
+        <p id="victoryText">Incrível! Você completou o modo normal atingindo <span id="victoryScore">0</span> pontos em <span id="victoryTime">00:00</span>!</p>
         
         <div class="image-container">
             <img id="victoryImage" src="https://i.pinimg.com/474x/e1/69/96/e16996de8f95ffad7527687f1c2b6bfa.jpg" alt="[Gato fazendo joinha]">
@@ -613,15 +674,36 @@
 
     <div class="hud-overlay" id="hudOverlay">
         <div class="hud-header">
-            <div class="hud-card">
-                <i class="fa-solid fa-trophy"></i>
-                <div>
-                    <div class="hud-label">Pontos</div>
-                    <div id="scoreVal" class="hud-value">0</div>
+            <div style="display: flex; gap: 10px;">
+                <div class="hud-card" id="hudP1">
+                    <i class="fa-solid fa-trophy" id="iconP1"></i>
+                    <div>
+                        <div class="hud-label" id="labelP1">Pontos</div>
+                        <div id="scoreVal" class="hud-value">0</div>
+                    </div>
                 </div>
+
+                <div class="hud-card" id="hudP2" style="display: none; border-color: rgba(59, 130, 246, 0.4);">
+                    <i class="fa-solid fa-gamepad" style="color: #3b82f6;"></i>
+                    <div>
+                        <div class="hud-label">Pontos (P2)</div>
+                        <div id="p2ScoreVal" class="hud-value" style="color: #3b82f6;">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hud-title-container">
+                <h1 id="hudTitle">Jogo da Cobrinha</h1>
             </div>
             <div style="display: flex; flex-direction: row; gap: 12px; align-items: center;">
                 <div id="gameMusicContainer"></div>
+                <div class="hud-card" id="backToMenuBtn" style="display: none; cursor: pointer; pointer-events: auto; border-color: rgba(239, 68, 68, 0.4);" onclick="restartGame(true)">
+                    <i class="fa-solid fa-right-from-bracket" style="color: #ef4444;"></i>
+                    <div>
+                        <div class="hud-label" style="color: rgba(239, 68, 68, 0.8);">Sair</div>
+                        <div class="hud-value" style="font-size: 14px; color: #fff;">MENU</div>
+                    </div>
+                </div>
                 <div class="hud-card">
                     <i class="fa-solid fa-clock"></i>
                     <div>
@@ -653,7 +735,6 @@
         <div id="startMsg">Pressione qualquer botão de seta ou rasteje para iniciar</div>
     </div>
 
-    <!-- ARENA CONTAINER LIMITA ONDE A COBRA VIVE -->
     <div id="arenaContainer">
         <canvas id="gameCanvas"></canvas>
     </div>
@@ -665,12 +746,15 @@
         let size = 26; 
 
         function selectDevice(type) {
+            const mpBtn = document.getElementById("multiplayerBtn");
             if (type === 'mobile') {
                 isMobile = true;
                 size = 14; 
+                if (mpBtn) mpBtn.style.display = "none";
             } else {
                 isMobile = false;
                 size = 26;
+                if (mpBtn) mpBtn.style.display = "flex";
             }
             
             deviceScreen.style.opacity = 0;
@@ -683,14 +767,15 @@
             if (isScaring || over) return; 
             if (startScreen.style.display !== "none" || deviceScreen.style.display !== "none") return;
 
-            const validKeys = [37, 38, 39, 40, 65, 68, 83, 87]; 
+            // Includindo teclas I J K L (73, 74, 75, 76)
+            const validKeys = [37, 38, 39, 40, 65, 68, 83, 87, 73, 74, 75, 76]; 
             if(validKeys.includes(keyCode)) {
                 if(!started) {
                     started = true; 
                     startMatch = Date.now(); 
                     startMsg.style.display = "none";
                     
-                    if (gameMode === 'normal') {
+                    if (gameMode === 'normal' || gameMode === 'multiplayer') {
                         mTimer = setInterval(() => { if(!mushroom) mushroom = spawn(); }, 20000);
                         rTimer = setInterval(() => { if(!rotten) rotten = spawn(); }, 15000);
                     } else if (gameMode === 'infinite') {
@@ -698,15 +783,29 @@
                     }
                 }
                 
-                if ((keyCode == 37 || keyCode == 65) && vx <= 0) { vx = -curSpeed; vy = 0; }
-                if ((keyCode == 38 || keyCode == 87) && vy <= 0) { vx = 0; vy = -curSpeed; }
-                if ((keyCode == 39 || keyCode == 68) && vx >= 0) { vx = curSpeed; vy = 0; }
-                if ((keyCode == 40 || keyCode == 83) && vy >= 0) { vx = 0; vy = curSpeed; } 
+                if (gameMode === 'multiplayer') {
+                    // P1: WASD (mantido setas também para mobile se vir a clicar, mas idealmente WASD)
+                    if ((keyCode == 37 || keyCode == 65) && vx <= 0) { vx = -curSpeed; vy = 0; }
+                    if ((keyCode == 38 || keyCode == 87) && vy <= 0) { vx = 0; vy = -curSpeed; }
+                    if ((keyCode == 39 || keyCode == 68) && vx >= 0) { vx = curSpeed; vy = 0; }
+                    if ((keyCode == 40 || keyCode == 83) && vy >= 0) { vx = 0; vy = curSpeed; } 
+
+                    // P2: IJKL
+                    if (keyCode == 74 && p2_vx <= 0) { p2_vx = -p2_curSpeed; p2_vy = 0; } // J (Left)
+                    if (keyCode == 73 && p2_vy <= 0) { p2_vx = 0; p2_vy = -p2_curSpeed; } // I (Up)
+                    if (keyCode == 76 && p2_vx >= 0) { p2_vx = p2_curSpeed; p2_vy = 0; } // L (Right)
+                    if (keyCode == 75 && p2_vy >= 0) { p2_vx = 0; p2_vy = p2_curSpeed; } // K (Down)
+                } else {
+                    if ((keyCode == 37 || keyCode == 65) && vx <= 0) { vx = -curSpeed; vy = 0; }
+                    if ((keyCode == 38 || keyCode == 87) && vy <= 0) { vx = 0; vy = -curSpeed; }
+                    if ((keyCode == 39 || keyCode == 68) && vx >= 0) { vx = curSpeed; vy = 0; }
+                    if ((keyCode == 40 || keyCode == 83) && vy >= 0) { vx = 0; vy = curSpeed; } 
+                }
             }
         }
 
         document.addEventListener("keydown", e => {
-            const validKeys = [37, 38, 39, 40, 65, 68, 83, 87]; 
+            const validKeys = [37, 38, 39, 40, 65, 68, 83, 87, 73, 74, 75, 76]; 
             if(validKeys.includes(e.keyCode)) e.preventDefault();
             handleInput(e.keyCode);
         });
@@ -739,6 +838,7 @@
         const victoryScore = document.getElementById("victoryScore");
         const victoryTime = document.getElementById("victoryTime");
         const victoryImage = document.getElementById("victoryImage");
+        const victoryText = document.getElementById("victoryText");
         
         const scaryOverlay = document.getElementById("scaryOverlay");
         const startMsg = document.getElementById("startMsg");
@@ -780,7 +880,6 @@
         let snakeOutlineColor = "#022c22"; 
         
         let luckyTimerTimeout = null;
-
         let passiveTimeout = null;
         let currentPassive = 0; 
         let passiveEndTime = 0;
@@ -789,6 +888,9 @@
         colorPicker.addEventListener("input", (e) => {
             snakeColor = e.target.value;
             snakeOutlineColor = shadeColor(snakeColor, 0.25);
+            if(gameMode === 'multiplayer') {
+                document.getElementById('scoreVal').style.color = snakeColor;
+            }
         });
 
         function shadeColor(hex, factor) {
@@ -796,19 +898,29 @@
                 R = (num >> 16),
                 G = (num >> 8 & 0x00FF),
                 B = (num & 0x0000FF);
-            
-            R = Math.floor(R * factor);
-            G = Math.floor(G * factor);
-            B = Math.floor(B * factor);
-            
+            R = Math.floor(R * factor); G = Math.floor(G * factor); B = Math.floor(B * factor);
             return "#" + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
         }
 
         function iniciarJogoCompleto(mode) {
             gameMode = mode;
 
-            // Movemos o botão do menu inicial para a HUD do lado esquerdo do timer
             gameMusicContainer.appendChild(musicToggleBtn);
+
+            if (mode === 'multiplayer') {
+                document.getElementById('hudP2').style.display = 'flex';
+                document.getElementById('labelP1').innerText = 'PONTOS (P1)';
+                document.getElementById('scoreVal').style.color = snakeColor;
+                document.getElementById("hudTitle").innerText = "Multiplayer";
+                document.getElementById('backToMenuBtn').style.display = 'flex';
+            } else {
+                document.getElementById('hudP2').style.display = 'none';
+                document.getElementById('labelP1').innerText = 'PONTOS';
+                document.getElementById('scoreVal').style.color = '#fff';
+                document.getElementById('backToMenuBtn').style.display = 'none';
+                if (mode === 'normal') document.getElementById("hudTitle").innerText = "Cobrinha (Normal)";
+                else document.getElementById("hudTitle").innerText = "Cobrinha (Infinito)";
+            }
 
             document.getElementById("hudOverlay").style.display = "flex";
             document.getElementById("arenaContainer").style.display = "flex";
@@ -851,47 +963,59 @@
         window.addEventListener('resize', resize); 
         resize();
 
+        // Variáveis P1
         let score = 0;
-        let x = canvas.width / 2;
-        let y = canvas.height / 2;
-        let vx = 0;
-        let vy = 0;
+        let x = 0; let y = 0;
+        let vx = 0; let vy = 0;
         const baseSpeed = 1.5; 
         let curSpeed = baseSpeed;
-        
-        let path = [];
-        let snakeLen = 5;
-        const spacing = 4; 
-        
+        let path = []; let snakeLen = 5; const spacing = 4; 
+        let trip = false; let tripEnd = 0;
+        let isPoisoned = false; let poisonEnd = 0;
+
+        // Variáveis P2
+        let p2_score = 0;
+        let p2_x = 0; let p2_y = 0;
+        let p2_vx = 0; let p2_vy = 0;
+        let p2_curSpeed = baseSpeed;
+        let p2_path = []; let p2_snakeLen = 5;
+        let p2_trip = false; let p2_tripEnd = 0;
+        let p2_isPoisoned = false; let p2_poisonEnd = 0;
+
         let food = spawn();
         let mushroom = null;
         let rotten = null;
         
-        let mTimer = null;
-        let rTimer = null;
-        let trip = false;
-        let tripEnd = 0;
-        let startMatch = null;
-        let started = false;
-        let over = false;
-        
+        let mTimer = null; let rTimer = null;
+        let startMatch = null; let started = false; let over = false;
         let isScaring = false; 
-        let isPoisoned = false;
-        let poisonEnd = 0;
 
         function initSnake() {
-            x = canvas.width / 2;
-            y = canvas.height / 2;
-            vx = 0;
-            vy = 0;
+            if (gameMode === 'multiplayer') {
+                x = canvas.width / 3;
+                y = canvas.height / 2;
+                p2_x = (canvas.width / 3) * 2;
+                p2_y = canvas.height / 2;
+                
+                p2_vx = 0; p2_vy = 0;
+                p2_curSpeed = baseSpeed;
+                p2_snakeLen = 5;
+                p2_path = [];
+                for (let i = 0; i < p2_snakeLen * spacing; i++) { p2_path.push({x: p2_x, y: p2_y}); }
+                p2_score = 0;
+                p2_trip = false; p2_isPoisoned = false;
+                document.getElementById('p2ScoreVal').innerText = "0";
+            } else {
+                x = canvas.width / 2;
+                y = canvas.height / 2;
+            }
+
+            vx = 0; vy = 0;
             curSpeed = baseSpeed;
             snakeLen = 5;
             path = [];
-            for (let i = 0; i < snakeLen * spacing; i++) {
-                path.push({x: x, y: y});
-            }
+            for (let i = 0; i < snakeLen * spacing; i++) { path.push({x: x, y: y}); }
         }
-        initSnake();
 
         function spawn() { 
             const margin = isMobile ? 30 : 60;
@@ -904,66 +1028,38 @@
         function startPassiveTimeoutChain() {
             clearPassiveTimers();
             passiveTimeout = setTimeout(() => {
-                if (!over && started && gameMode === 'infinite') {
-                    triggerRandomPassive();
-                }
+                if (!over && started && gameMode === 'infinite') { triggerRandomPassive(); }
             }, 60000); 
         }
 
         function clearPassiveTimers() {
-            if (passiveTimeout) {
-                clearTimeout(passiveTimeout);
-                passiveTimeout = null;
-            }
-            if (flashInterval) {
-                clearInterval(flashInterval);
-                flashInterval = null;
-            }
+            if (passiveTimeout) { clearTimeout(passiveTimeout); passiveTimeout = null; }
+            if (flashInterval) { clearInterval(flashInterval); flashInterval = null; }
             document.body.classList.remove("flash-active");
         }
 
         function triggerRandomPassive() {
-            if (currentPassive === 1 || currentPassive === 2) {
-                curSpeed = baseSpeed;
-                resetVelocity();
-            }
-            if (currentPassive === 5) {
-                trip = false;
-                tripEnd = 0;
-            }
+            if (currentPassive === 1 || currentPassive === 2) { curSpeed = baseSpeed; resetVelocity(); }
+            if (currentPassive === 5) { trip = false; tripEnd = 0; }
             clearPassiveTimers();
 
             let roll = Math.floor(Math.random() * 5) + 1;
             currentPassive = roll;
             passiveAlert.style.display = "flex";
 
-            if (roll === 1) {
-                curSpeed = baseSpeed * 1.6;
-                resetVelocity();
-                passiveEndTime = Date.now() + 30000;
-            } else if (roll === 2) {
-                curSpeed = baseSpeed * 0.7; 
-                resetVelocity();
-                passiveEndTime = Date.now() + 30000;
-            } else if (roll === 3) {
+            if (roll === 1) { curSpeed = baseSpeed * 1.6; resetVelocity(); passiveEndTime = Date.now() + 30000; }
+            else if (roll === 2) { curSpeed = baseSpeed * 0.7; resetVelocity(); passiveEndTime = Date.now() + 30000; }
+            else if (roll === 3) {
                 passiveEndTime = Date.now() + 15000;
-
                 document.body.classList.add("flash-active");
                 setTimeout(() => document.body.classList.remove("flash-active"), 300);
-
                 flashInterval = setInterval(() => {
                     document.body.classList.add("flash-active");
-                    setTimeout(() => {
-                        document.body.classList.remove("flash-active");
-                    }, 300);
+                    setTimeout(() => { document.body.classList.remove("flash-active"); }, 300);
                 }, 2000);
-            } else if (roll === 4) {
-                passiveEndTime = Date.now() + 4000;
-            } else if (roll === 5) {
-                trip = true;
-                tripEnd = Date.now() + 30000;
-                passiveEndTime = Date.now() + 30000;
             }
+            else if (roll === 4) { passiveEndTime = Date.now() + 4000; }
+            else if (roll === 5) { trip = true; tripEnd = Date.now() + 30000; passiveEndTime = Date.now() + 30000; }
         }
 
         function format(ms) { 
@@ -974,23 +1070,24 @@
         function gameLoop() {
             if (over) return;
             requestAnimationFrame(gameLoop);
-            
-            if (isScaring) {
-                drawScene(); 
-                return; 
-            }
-
+            if (isScaring) { drawScene(); return; }
             updateLogic();
             drawScene();
         }
 
         function checkVictory() {
             if (gameMode === 'normal' && score >= 500 && !over) {
-                triggerVictory();
+                triggerVictory("Você");
+            } else if (gameMode === 'multiplayer') {
+                if (score >= 500 && !over) {
+                    triggerVictory("Jogador 1 (Vermelho/Verde)");
+                } else if (p2_score >= 500 && !over) {
+                    triggerVictory("Jogador 2 (Azul)");
+                }
             }
         }
 
-        function triggerVictory() {
+        function triggerVictory(winnerName) {
             over = true;
             started = false;
             clearInterval(mTimer); 
@@ -998,143 +1095,203 @@
             clearPassiveTimers();
             bgMusic.pause();
 
-            victoryScore.innerText = score;
-            victoryTime.innerText = format(Date.now() - startMatch);
+            if (gameMode === 'multiplayer') {
+                victoryScore.innerText = `O ${winnerName} venceu`;
+                victoryText.innerHTML = `Incrível corrida! <strong>${winnerName}</strong> chegou nos 500 pontos primeiro no tempo de <span id="victoryTime">00:00</span>!`;
+            } else {
+                victoryScore.innerText = score;
+                victoryText.innerHTML = `Incrível! Você completou o modo normal atingindo <span id="victoryScore">${score}</span> pontos em <span id="victoryTime">00:00</span>!`;
+            }
+            
+            document.getElementById("victoryTime").innerText = format(Date.now() - startMatch);
             victoryModal.style.display = "block";
         }
 
         function updateLogic() {
             if(!started) return;
-
             timeDisplay.innerText = format(Date.now() - startMatch);
 
+            // LOGICA MODO INFINITO (PASSIVAS)
             if (gameMode === 'infinite' && currentPassive > 0) {
                 let timeLeft = passiveEndTime - Date.now();
                 if (timeLeft <= 0) {
-                    if (currentPassive === 1 || currentPassive === 2) {
-                        curSpeed = baseSpeed;
-                        resetVelocity();
-                    }
-                    if (currentPassive === 5) {
-                        trip = false;
-                        tripEnd = 0;
-                    }
+                    if (currentPassive === 1 || currentPassive === 2) { curSpeed = baseSpeed; resetVelocity(); }
+                    if (currentPassive === 5) { trip = false; tripEnd = 0; }
                     clearPassiveTimers();
-                    
                     currentPassive = 0;
                     passiveAlert.style.display = "none";
-
                     startPassiveTimeoutChain();
                 } else {
                     let seconds = (timeLeft / 1000).toFixed(1);
-                    if (currentPassive === 1) {
-                        passiveText.innerText = `VELOCIDADE MÁXIMA: ${seconds}s`;
-                    } else if (currentPassive === 2) {
-                        passiveText.innerText = `SUPER LENTO: ${seconds}s`;
-                    } else if (currentPassive === 3) {
-                        passiveText.innerText = `EFEITO FLASH: ${seconds}s`;
-                    } else if (currentPassive === 4) {
-                        passiveText.innerText = `SORTE: NADA ACONTECEU! (${seconds}s)`;
-                    } else if (currentPassive === 5) {
-                        passiveText.innerText = `INVENCIBILIDADE: ${seconds}s`;
+                    if (currentPassive === 1) passiveText.innerText = `VELOCIDADE MÁXIMA: ${seconds}s`;
+                    else if (currentPassive === 2) passiveText.innerText = `SUPER LENTO: ${seconds}s`;
+                    else if (currentPassive === 3) passiveText.innerText = `EFEITO FLASH: ${seconds}s`;
+                    else if (currentPassive === 4) passiveText.innerText = `SORTE: NADA ACONTECEU! (${seconds}s)`;
+                    else if (currentPassive === 5) passiveText.innerText = `INVENCIBILIDADE: ${seconds}s`;
+                }
+            }
+
+            // LÓGICA DE EFEITOS P1 E P2 (TEMPORIZADORES)
+            if(trip) {
+                if(tripEnd - Date.now() <= 0) { trip = false; curSpeed = baseSpeed; resetVelocity(); }
+            }
+            if(isPoisoned) {
+                 if(poisonEnd - Date.now() <= 0) {
+                     isPoisoned = false; curSpeed = trip ? baseSpeed * 1.6 : baseSpeed; resetVelocity();
+                 }
+            }
+
+            if (gameMode === 'multiplayer') {
+                if(p2_trip) {
+                    if(p2_tripEnd - Date.now() <= 0) { p2_trip = false; p2_curSpeed = baseSpeed; resetVelocityP2(); }
+                }
+                if(p2_isPoisoned) {
+                    if(p2_poisonEnd - Date.now() <= 0) { p2_isPoisoned = false; p2_curSpeed = p2_trip ? baseSpeed * 1.6 : baseSpeed; resetVelocityP2(); }
+                }
+            }
+
+            // ATUALIZAÇÃO VISUAL (UI) DOS ALERTAS DE MODO DEUS E VENENO
+            if (gameMode === 'multiplayer') {
+                if (trip || p2_trip) {
+                    magicAlert.style.display = "flex";
+                    if (trip && p2_trip) {
+                        magicText.innerText = `P1: ${(Math.max(0, tripEnd - Date.now())/1000).toFixed(1)}s | P2: ${(Math.max(0, p2_tripEnd - Date.now())/1000).toFixed(1)}s`;
+                    } else if (trip) {
+                        magicText.innerText = `P1 DEUS: ${(Math.max(0, tripEnd - Date.now())/1000).toFixed(1)}s`;
+                    } else {
+                        magicText.innerText = `P2 DEUS: ${(Math.max(0, p2_tripEnd - Date.now())/1000).toFixed(1)}s`;
+                    }
+                } else {
+                    magicAlert.style.display = "none";
+                }
+
+                if (isPoisoned || p2_isPoisoned) {
+                    poisonAlert.style.display = "flex";
+                    canvas.classList.add("poisoned-canvas");
+                    if (isPoisoned && p2_isPoisoned) {
+                        poisonText.innerText = `P1: ${(Math.max(0, poisonEnd - Date.now())/1000).toFixed(1)}s | P2: ${(Math.max(0, p2_poisonEnd - Date.now())/1000).toFixed(1)}s`;
+                    } else if (isPoisoned) {
+                        poisonText.innerText = `P1 VENENO: ${(Math.max(0, poisonEnd - Date.now())/1000).toFixed(1)}s`;
+                    } else {
+                        poisonText.innerText = `P2 VENENO: ${(Math.max(0, p2_poisonEnd - Date.now())/1000).toFixed(1)}s`;
+                    }
+                } else {
+                    poisonAlert.style.display = "none";
+                    canvas.classList.remove("poisoned-canvas");
+                }
+            } else {
+                if (trip) {
+                    magicAlert.style.display = "flex"; magicText.innerText = `MODO DEUS: ${(Math.max(0, tripEnd - Date.now())/1000).toFixed(1)}s`;
+                } else {
+                    magicAlert.style.display = "none";
+                }
+                if (isPoisoned) {
+                    poisonAlert.style.display = "flex"; poisonText.innerText = `VENENO (LENTO): ${(Math.max(0, poisonEnd - Date.now())/1000).toFixed(1)}s`;
+                    canvas.classList.add("poisoned-canvas");
+                } else {
+                    poisonAlert.style.display = "none";
+                    canvas.classList.remove("poisoned-canvas");
+                }
+            }
+
+            // MOVIMENTAÇÃO E PAREDES (P1)
+            if (gameMode === 'multiplayer') {
+                // Bloqueia nas paredes (Não morre e não atravessa)
+                if (x + vx < size/2) { x = size/2; vx = 0; }
+                else if (x + vx > canvas.width - size/2) { x = canvas.width - size/2; vx = 0; }
+                else x += vx;
+
+                if (y + vy < size/2) { y = size/2; vy = 0; }
+                else if (y + vy > canvas.height - size/2) { y = canvas.height - size/2; vy = 0; }
+                else y += vy;
+            } else {
+                x += vx; y += vy;
+                if(trip || (gameMode === 'infinite' && currentPassive === 5)) {
+                    let teleported = false; let dx = 0; let dy = 0;
+                    if(x < 0) { x = canvas.width; dx = canvas.width; teleported = true; } 
+                    else if(x > canvas.width) { x = 0; dx = -canvas.width; teleported = true; }
+                    if(y < 0) { y = canvas.height; dy = canvas.height; teleported = true; } 
+                    else if(y > canvas.height) { y = 0; dy = -canvas.height; teleported = true; }
+                    if(teleported) { path = path.map(p => ({ x: p.x + dx, y: p.y + dy })); }
+                } else if(x < 0 || y < 0 || x > canvas.width || y > canvas.height) { 
+                    triggerGameOver(); return; 
+                }
+            }
+            path.unshift({x, y});
+            if(path.length > snakeLen * spacing) path.pop();
+
+            // MOVIMENTAÇÃO E PAREDES (P2)
+            if (gameMode === 'multiplayer') {
+                if (p2_x + p2_vx < size/2) { p2_x = size/2; p2_vx = 0; }
+                else if (p2_x + p2_vx > canvas.width - size/2) { p2_x = canvas.width - size/2; p2_vx = 0; }
+                else p2_x += p2_vx;
+
+                if (p2_y + p2_vy < size/2) { p2_y = size/2; p2_vy = 0; }
+                else if (p2_y + p2_vy > canvas.height - size/2) { p2_y = canvas.height - size/2; p2_vy = 0; }
+                else p2_y += p2_vy;
+                
+                p2_path.unshift({x: p2_x, y: p2_y});
+                if(p2_path.length > p2_snakeLen * spacing) p2_path.pop();
+            }
+
+            // COMIDAS (P1)
+            if(Math.hypot(x-food.x, y-food.y) < size) { 
+                score += 10; scoreDisplay.innerText = score; snakeLen += 4; food = spawn(); checkVictory(); 
+            }
+            if((gameMode === 'normal' || gameMode === 'multiplayer') && mushroom && Math.hypot(x-mushroom.x, y-mushroom.y) < size) {
+                mushroom = null; trip = true; tripEnd = Date.now() + 5000; 
+                if(!isPoisoned) { curSpeed = baseSpeed * 1.6; resetVelocity(); }
+            }
+            if((gameMode === 'normal' || gameMode === 'multiplayer') && rotten && Math.hypot(x-rotten.x, y-rotten.y) < size) {
+                rotten = null; 
+                let roleta = Math.random();
+                if (gameMode === 'multiplayer') {
+                    if (roleta < 0.5) {
+                        isPoisoned = true; poisonEnd = Date.now() + 5000;
+                        curSpeed = baseSpeed * 0.5; resetVelocity();
+                    } else {
+                        score += 50; scoreDisplay.innerText = score; 
+                        document.getElementById('luckyText').innerText = "P1: +50 PONTOS!";
+                        luckyAlert.style.display = "flex";
+                        clearTimeout(luckyTimerTimeout); luckyTimerTimeout = setTimeout(() => { luckyAlert.style.display = "none"; }, 2000);
+                        checkVictory(); 
+                    }
+                } else {
+                    if (roleta < 0.33) { triggerSusto(); } 
+                    else if (roleta < 0.66) {
+                        isPoisoned = true; poisonEnd = Date.now() + 5000; canvas.classList.add("poisoned-canvas"); 
+                        curSpeed = baseSpeed * 0.5; resetVelocity();
+                    } else {
+                        score += 50; scoreDisplay.innerText = score; 
+                        document.getElementById('luckyText').innerText = "SORTE: +50 PONTOS!";
+                        luckyAlert.style.display = "flex";
+                        clearTimeout(luckyTimerTimeout); luckyTimerTimeout = setTimeout(() => { luckyAlert.style.display = "none"; }, 2000);
+                        checkVictory(); 
                     }
                 }
             }
 
-            if(gameMode === 'normal' && trip) {
-                let left = tripEnd - Date.now();
-                if(left <= 0) {
-                    trip = false; 
-                    magicAlert.style.display = "none"; 
-                    curSpeed = baseSpeed;
-                    resetVelocity();
-                } else {
-                    magicAlert.style.display = "flex"; 
-                    magicText.innerText = `MODO DEUS: ${(left/1000).toFixed(1)}s`;
+            // COMIDAS (P2)
+            if (gameMode === 'multiplayer') {
+                if(Math.hypot(p2_x-food.x, p2_y-food.y) < size) { 
+                    p2_score += 10; document.getElementById('p2ScoreVal').innerText = p2_score; p2_snakeLen += 4; food = spawn(); checkVictory(); 
                 }
-            }
-            
-            if(gameMode === 'normal' && isPoisoned) {
-                 let leftP = poisonEnd - Date.now();
-                 if(leftP <= 0) {
-                     isPoisoned = false;
-                     poisonAlert.style.display = "none";
-                     canvas.classList.remove("poisoned-canvas"); 
-                     curSpeed = trip ? baseSpeed * 1.6 : baseSpeed; 
-                     resetVelocity();
-                 } else {
-                     poisonAlert.style.display = "flex"; 
-                     poisonText.innerText = `VENENO (LENTO): ${(leftP/1000).toFixed(1)}s`;
-                 }
-            }
-
-            x += vx; 
-            y += vy;
-            
-            if(trip || (gameMode === 'infinite' && currentPassive === 5)) {
-                let teleported = false;
-                let dx = 0;
-                let dy = 0;
-
-                if(x < 0) { x = canvas.width; dx = canvas.width; teleported = true; } 
-                else if(x > canvas.width) { x = 0; dx = -canvas.width; teleported = true; }
-                
-                if(y < 0) { y = canvas.height; dy = canvas.height; teleported = true; } 
-                else if(y > canvas.height) { y = 0; dy = -canvas.height; teleported = true; }
-
-                if(teleported) {
-                    path = path.map(p => ({ x: p.x + dx, y: p.y + dy }));
+                if(mushroom && Math.hypot(p2_x-mushroom.x, p2_y-mushroom.y) < size) {
+                    mushroom = null; p2_trip = true; p2_tripEnd = Date.now() + 5000; 
+                    if(!p2_isPoisoned) { p2_curSpeed = baseSpeed * 1.6; resetVelocityP2(); }
                 }
-            } else if(x < 0 || y < 0 || x > canvas.width || y > canvas.height) { 
-                triggerGameOver(); 
-                return; 
-            }
-
-            path.unshift({x, y});
-            if(path.length > snakeLen * spacing) path.pop();
-
-            if(Math.hypot(x-food.x, y-food.y) < size) { 
-                score += 10; 
-                scoreDisplay.innerText = score; 
-                snakeLen += 4; 
-                food = spawn(); 
-                checkVictory(); 
-            }
-            
-            if(gameMode === 'normal' && mushroom && Math.hypot(x-mushroom.x, y-mushroom.y) < size) {
-                mushroom = null; 
-                trip = true; 
-                tripEnd = Date.now() + 5000; 
-                if(!isPoisoned) {
-                     curSpeed = baseSpeed * 1.6;
-                     resetVelocity();
-                }
-            }
-            
-            if(gameMode === 'normal' && rotten && Math.hypot(x-rotten.x, y-rotten.y) < size) {
-                rotten = null; 
-                
-                let roleta = Math.random();
-                
-                if (roleta < 0.33) {
-                    triggerSusto();
-                } else if (roleta < 0.66) {
-                    isPoisoned = true;
-                    poisonEnd = Date.now() + 5000;
-                    canvas.classList.add("poisoned-canvas"); 
-                    curSpeed = baseSpeed * 0.5; 
-                    resetVelocity();
-                } else {
-                    score += 50;
-                    scoreDisplay.innerText = score;
-                    luckyAlert.style.display = "flex";
-                    
-                    clearTimeout(luckyTimerTimeout);
-                    luckyTimerTimeout = setTimeout(() => {
-                        luckyAlert.style.display = "none";
-                    }, 2000);
-
-                    checkVictory(); 
+                if(rotten && Math.hypot(p2_x-rotten.x, p2_y-rotten.y) < size) {
+                    rotten = null; 
+                    if (Math.random() < 0.5) {
+                        p2_isPoisoned = true; p2_poisonEnd = Date.now() + 5000;
+                        p2_curSpeed = baseSpeed * 0.5; resetVelocityP2();
+                    } else {
+                        p2_score += 50; document.getElementById('p2ScoreVal').innerText = p2_score; 
+                        document.getElementById('luckyText').innerText = "P2: +50 PONTOS!";
+                        luckyAlert.style.display = "flex";
+                        clearTimeout(luckyTimerTimeout); luckyTimerTimeout = setTimeout(() => { luckyAlert.style.display = "none"; }, 2000);
+                        checkVictory(); 
+                    }
                 }
             }
         }
@@ -1147,7 +1304,7 @@
             ctx.textBaseline = "middle";
             ctx.fillText("🍎", food.x, food.y);
             
-            if (gameMode === 'normal') {
+            if (gameMode === 'normal' || gameMode === 'multiplayer') {
                 if(mushroom) ctx.fillText("🍄", mushroom.x, mushroom.y);
                 if(rotten) ctx.fillText("🍏", rotten.x, rotten.y);
             }
@@ -1155,137 +1312,132 @@
             if(!started) { 
                 if (startScreen.style.display !== "none" || deviceScreen.style.display !== "none") return;
 
+                // Cobra P1 (Start State)
                 ctx.fillStyle = snakeOutlineColor;
-                ctx.beginPath();
-                ctx.arc(x, y, (size/2) + 2.5, 0, Math.PI * 2);
-                ctx.fill();
-
+                ctx.beginPath(); ctx.arc(x, y, (size/2) + 2.5, 0, Math.PI * 2); ctx.fill();
                 ctx.fillStyle = snakeColor; 
-                ctx.beginPath();
-                ctx.arc(x, y, size/2, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.beginPath(); ctx.arc(x, y, size/2, 0, Math.PI * 2); ctx.fill();
+                
+                // Cobra P2 (Start State)
+                if (gameMode === 'multiplayer') {
+                    ctx.fillStyle = "#1e3a8a"; // Azul escuro contorno
+                    ctx.beginPath(); ctx.arc(p2_x, p2_y, (size/2) + 2.5, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = "#3b82f6"; // Azul preenchimento
+                    ctx.beginPath(); ctx.arc(p2_x, p2_y, size/2, 0, Math.PI * 2); ctx.fill();
+                }
                 return; 
             }
 
             let radius = size / 2;
 
+            // ================== DESENHAR P1 ==================
             let points = [];
             for (let i = 0; i < snakeLen; i++) {
-                let idx = i * spacing;
-                if (idx >= path.length) idx = path.length - 1;
-                points.push(path[idx]);
+                let idx = i * spacing; if (idx >= path.length) idx = path.length - 1; points.push(path[idx]);
             }
-
             let isInvincible = trip || (gameMode === 'infinite' && currentPassive === 5);
 
             if (!isInvincible) {
-                ctx.beginPath();
-                ctx.lineWidth = size + 5; 
-                ctx.lineCap = "round";
-                ctx.lineJoin = "round";
+                ctx.beginPath(); ctx.lineWidth = size + 5; ctx.lineCap = "round"; ctx.lineJoin = "round";
                 ctx.strokeStyle = isPoisoned ? "#022c22" : snakeOutlineColor;
-                for (let i = 0; i < points.length; i++) {
-                    if (i === 0) ctx.moveTo(points[i].x, points[i].y);
-                    else ctx.lineTo(points[i].x, points[i].y);
-                }
+                for (let i = 0; i < points.length; i++) { if (i === 0) ctx.moveTo(points[i].x, points[i].y); else ctx.lineTo(points[i].x, points[i].y); }
                 ctx.stroke();
 
-                ctx.beginPath();
-                ctx.lineWidth = size; 
-                ctx.lineCap = "round";
-                ctx.lineJoin = "round";
+                ctx.beginPath(); ctx.lineWidth = size; ctx.lineCap = "round"; ctx.lineJoin = "round";
                 ctx.strokeStyle = isPoisoned ? "#84cc16" : snakeColor;
-                for (let i = 0; i < points.length; i++) {
-                    if (i === 0) ctx.moveTo(points[i].x, points[i].y);
-                    else ctx.lineTo(points[i].x, points[i].y);
-                }
+                for (let i = 0; i < points.length; i++) { if (i === 0) ctx.moveTo(points[i].x, points[i].y); else ctx.lineTo(points[i].x, points[i].y); }
                 ctx.stroke();
             } else {
                 for (let i = 0; i < points.length - 1; i++) {
-                    let p1 = points[i];
-                    let p2 = points[i+1];
+                    let p1 = points[i]; let p2 = points[i+1];
                     if (Math.hypot(p1.x - p2.x, p1.y - p2.y) > size * 2) continue;
-                    ctx.beginPath();
-                    ctx.lineWidth = size + 5;
-                    ctx.lineCap = "round";
-                    ctx.strokeStyle = snakeOutlineColor;
-                    ctx.moveTo(p1.x, p1.y);
-                    ctx.lineTo(p2.x, p2.y);
-                    ctx.stroke();
+                    ctx.beginPath(); ctx.lineWidth = size + 5; ctx.lineCap = "round"; ctx.strokeStyle = snakeOutlineColor;
+                    ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
                 }
-
                 for (let i = 0; i < points.length - 1; i++) {
-                    let p1 = points[i];
-                    let p2 = points[i+1];
+                    let p1 = points[i]; let p2 = points[i+1];
                     if (Math.hypot(p1.x - p2.x, p1.y - p2.y) > size * 2) continue;
-                    ctx.beginPath();
-                    ctx.lineWidth = size;
-                    ctx.lineCap = "round";
-                    
-                    if (trip) {
-                        let hue1 = (Date.now() / 3 + i * 10) % 360;
-                        ctx.strokeStyle = `hsl(${hue1}, 100%, 50%)`;
-                    } else {
-                        ctx.strokeStyle = snakeColor;
-                    }
-                    ctx.moveTo(p1.x, p1.y);
-                    ctx.lineTo(p2.x, p2.y);
-                    ctx.stroke();
+                    ctx.beginPath(); ctx.lineWidth = size; ctx.lineCap = "round";
+                    if (trip) { ctx.strokeStyle = `hsl(${(Date.now() / 3 + i * 10) % 360}, 100%, 50%)`; } else { ctx.strokeStyle = snakeColor; }
+                    ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
                 }
             }
 
             if (points.length > 0) {
-                let head = points[0];
-                let angle = Math.atan2(vy, vx);
-                if (vx === 0 && vy === 0) angle = 0; 
-
-                let eyeOffsetAngle = 0.55; 
-                let eyeDist = radius * 0.5; 
-                let eyeRadius = radius * 0.28;
-                let pupilRadius = eyeRadius * 0.5;
-
+                let head = points[0]; let angle = Math.atan2(vy, vx); if (vx === 0 && vy === 0) angle = 0; 
+                let eyeOffsetAngle = 0.55; let eyeDist = radius * 0.5; let eyeRadius = radius * 0.28; let pupilRadius = eyeRadius * 0.5;
                 let eyes = [eyeOffsetAngle, -eyeOffsetAngle];
-                
                 eyes.forEach(offset => {
-                    let ex = head.x + Math.cos(angle + offset) * eyeDist;
-                    let ey = head.y + Math.sin(angle + offset) * eyeDist;
-
-                    ctx.beginPath();
-                    ctx.fillStyle = isPoisoned ? "#022c22" : snakeOutlineColor;
-                    ctx.arc(ex, ey, eyeRadius + 1, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    ctx.beginPath();
-                    ctx.fillStyle = "#ffffff";
-                    ctx.arc(ex, ey, eyeRadius, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    ctx.beginPath();
-                    ctx.fillStyle = "#000000";
-                    let px = ex + Math.cos(angle) * (eyeRadius * 0.3);
-                    let py = ey + Math.sin(angle) * (eyeRadius * 0.3);
-                    ctx.arc(px, py, pupilRadius, 0, Math.PI * 2);
-                    ctx.fill();
+                    let ex = head.x + Math.cos(angle + offset) * eyeDist; let ey = head.y + Math.sin(angle + offset) * eyeDist;
+                    ctx.beginPath(); ctx.fillStyle = isPoisoned ? "#022c22" : snakeOutlineColor; ctx.arc(ex, ey, eyeRadius + 1, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.fillStyle = "#ffffff"; ctx.arc(ex, ey, eyeRadius, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.fillStyle = "#000000";
+                    let px = ex + Math.cos(angle) * (eyeRadius * 0.3); let py = ey + Math.sin(angle) * (eyeRadius * 0.3);
+                    ctx.arc(px, py, pupilRadius, 0, Math.PI * 2); ctx.fill();
                 });
             }
 
-            for (let i = 8; i < points.length; i++) {
-                if (!isInvincible && Math.hypot(x - points[i].x, y - points[i].y) < size/2 && !isScaring) {
-                    triggerGameOver();
+            // MORTE P1 (Apenas se não for multiplayer, a pedido das regras do multi)
+            if (gameMode !== 'multiplayer') {
+                for (let i = 8; i < points.length; i++) {
+                    if (!isInvincible && Math.hypot(x - points[i].x, y - points[i].y) < size/2 && !isScaring) { triggerGameOver(); }
+                }
+            }
+
+            // ================== DESENHAR P2 ==================
+            if (gameMode === 'multiplayer') {
+                let p2_points = [];
+                for (let i = 0; i < p2_snakeLen; i++) {
+                    let idx = i * spacing; if (idx >= p2_path.length) idx = p2_path.length - 1; p2_points.push(p2_path[idx]);
+                }
+                
+                if (!p2_trip) {
+                    ctx.beginPath(); ctx.lineWidth = size + 5; ctx.lineCap = "round"; ctx.lineJoin = "round";
+                    ctx.strokeStyle = p2_isPoisoned ? "#1e3a8a" : "#1e3a8a"; // Azul escuro
+                    for (let i = 0; i < p2_points.length; i++) { if (i === 0) ctx.moveTo(p2_points[i].x, p2_points[i].y); else ctx.lineTo(p2_points[i].x, p2_points[i].y); }
+                    ctx.stroke();
+
+                    ctx.beginPath(); ctx.lineWidth = size; ctx.lineCap = "round"; ctx.lineJoin = "round";
+                    ctx.strokeStyle = p2_isPoisoned ? "#60a5fa" : "#3b82f6"; // Azul claro/normal
+                    for (let i = 0; i < p2_points.length; i++) { if (i === 0) ctx.moveTo(p2_points[i].x, p2_points[i].y); else ctx.lineTo(p2_points[i].x, p2_points[i].y); }
+                    ctx.stroke();
+                } else {
+                    for (let i = 0; i < p2_points.length - 1; i++) {
+                        let p1 = p2_points[i]; let p2 = p2_points[i+1];
+                        if (Math.hypot(p1.x - p2.x, p1.y - p2.y) > size * 2) continue;
+                        ctx.beginPath(); ctx.lineWidth = size + 5; ctx.lineCap = "round"; ctx.strokeStyle = "#1e3a8a";
+                        ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                    }
+                    for (let i = 0; i < p2_points.length - 1; i++) {
+                        let p1 = p2_points[i]; let p2 = p2_points[i+1];
+                        if (Math.hypot(p1.x - p2.x, p1.y - p2.y) > size * 2) continue;
+                        ctx.beginPath(); ctx.lineWidth = size; ctx.lineCap = "round";
+                        ctx.strokeStyle = `hsl(${(Date.now() / 3 + i * 10) % 360}, 100%, 50%)`;
+                        ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                    }
+                }
+
+                if (p2_points.length > 0) {
+                    let head = p2_points[0]; let angle = Math.atan2(p2_vy, p2_vx); if (p2_vx === 0 && p2_vy === 0) angle = 0; 
+                    let eyeOffsetAngle = 0.55; let eyeDist = radius * 0.5; let eyeRadius = radius * 0.28; let pupilRadius = eyeRadius * 0.5;
+                    let eyes = [eyeOffsetAngle, -eyeOffsetAngle];
+                    eyes.forEach(offset => {
+                        let ex = head.x + Math.cos(angle + offset) * eyeDist; let ey = head.y + Math.sin(angle + offset) * eyeDist;
+                        ctx.beginPath(); ctx.fillStyle = p2_isPoisoned ? "#1e3a8a" : "#1e3a8a"; ctx.arc(ex, ey, eyeRadius + 1, 0, Math.PI * 2); ctx.fill();
+                        ctx.beginPath(); ctx.fillStyle = "#ffffff"; ctx.arc(ex, ey, eyeRadius, 0, Math.PI * 2); ctx.fill();
+                        ctx.beginPath(); ctx.fillStyle = "#000000";
+                        let px = ex + Math.cos(angle) * (eyeRadius * 0.3); let py = ey + Math.sin(angle) * (eyeRadius * 0.3);
+                        ctx.arc(px, py, pupilRadius, 0, Math.PI * 2); ctx.fill();
+                    });
                 }
             }
         }
 
         function triggerSusto() {
-            isScaring = true;
-            scaryOverlay.style.display = "block"; 
-            bgMusic.pause(); 
-            scareSound.currentTime = 0;
-            scareSound.play().catch(e => console.log("Erro no som do susto"));
-
+            isScaring = true; scaryOverlay.style.display = "block"; bgMusic.pause(); 
+            scareSound.currentTime = 0; scareSound.play().catch(e => console.log("Erro no som do susto"));
             setTimeout(() => { 
-                scaryOverlay.style.display = "none"; 
-                isScaring = false;
+                scaryOverlay.style.display = "none"; isScaring = false;
                 if(!over && !isMusicPausedManually) bgMusic.play(); 
             }, 4000); 
         }
@@ -1295,77 +1447,61 @@
             if(vy > 0) vy = curSpeed; else if(vy < 0) vy = -curSpeed;
         }
 
+        function resetVelocityP2() {
+            if(p2_vx > 0) p2_vx = p2_curSpeed; else if(p2_vx < 0) p2_vx = -p2_curSpeed;
+            if(p2_vy > 0) p2_vy = p2_curSpeed; else if(p2_vy < 0) p2_vy = -p2_curSpeed;
+        }
+
         function triggerGameOver() {
-            over = true;
-            started = false;
-            clearInterval(mTimer); 
-            clearInterval(rTimer); 
-            clearPassiveTimers();
-            bgMusic.pause();
-            
+            over = true; started = false;
+            clearInterval(mTimer); clearInterval(rTimer); clearPassiveTimers(); bgMusic.pause();
             finalScore.innerText = score;
             finalTime.innerText = format(Date.now() - startMatch);
             gameOverModal.style.display = "block";
         }
 
         function restartGame(goToMenu = false) {
-            gameOverModal.style.display = "none";
-            victoryModal.style.display = "none";
+            gameOverModal.style.display = "none"; victoryModal.style.display = "none";
+            over = false; started = false;
             
-            over = false;
-            started = false;
-            score = 0;
-            scoreDisplay.innerText = "0";
-            timeDisplay.innerText = "00:00";
-            startMatch = null;
-            
-            initSnake();
-            
-            food = spawn();
-            mushroom = null;
-            rotten = null;
-            
-            clearInterval(mTimer);
-            clearInterval(rTimer);
-            clearPassiveTimers();
-            mTimer = null;
-            rTimer = null;
+            score = 0; scoreDisplay.innerText = "0";
+            p2_score = 0; document.getElementById('p2ScoreVal').innerText = "0";
 
-            currentPassive = 0;
-            passiveEndTime = 0;
-            passiveAlert.style.display = "none";
+            timeDisplay.innerText = "00:00"; startMatch = null;
             
-            trip = false;
-            tripEnd = 0;
-            magicAlert.style.display = "none";
+            initSnake(); food = spawn(); mushroom = null; rotten = null;
             
-            isPoisoned = false;
-            poisonEnd = 0;
-            poisonAlert.style.display = "none";
+            clearInterval(mTimer); clearInterval(rTimer); clearPassiveTimers();
+            mTimer = null; rTimer = null;
+
+            currentPassive = 0; passiveEndTime = 0; passiveAlert.style.display = "none";
+            trip = false; tripEnd = 0; magicAlert.style.display = "none";
+            isPoisoned = false; poisonEnd = 0; poisonAlert.style.display = "none";
             canvas.classList.remove("poisoned-canvas");
+
+            p2_trip = false; p2_tripEnd = 0; p2_isPoisoned = false; p2_poisonEnd = 0;
             
-            isScaring = false;
-            scaryOverlay.style.display = "none";
-            
-            bgMusic.pause();
-            bgMusic.currentTime = 0;
+            isScaring = false; scaryOverlay.style.display = "none";
+            bgMusic.pause(); bgMusic.currentTime = 0;
             
             if (goToMenu) {
                 selectorsGroup.appendChild(musicToggleBtn);
                 document.getElementById("hudOverlay").style.display = "none";
                 document.getElementById("arenaContainer").style.display = "none";
-                startScreen.style.display = "flex";
-                startScreen.style.opacity = 1;
-                startMsg.style.display = "block";
-                mobileControls.style.display = "none"; 
+                startScreen.style.display = "flex"; startScreen.style.opacity = 1;
+                startMsg.style.display = "block"; mobileControls.style.display = "none"; 
             } else {
                 iniciarJogoCompleto(gameMode);
             }
-
             gameLoop();
         }
 
         gameLoop();
+
+        setTimeout(() => {
+            const updateMarquee = document.querySelector('.update-marquee');
+            if (updateMarquee) updateMarquee.style.display = 'none';
+        }, 12000);
     </script>
 </body>
 </html>
