@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOGO DA COBRINHA - PREMIUM EDITION</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background-color: #0c111d; 
+            color: #f8fafc; 
+            font-family: 'Lato', sans-serif; 
+            overflow: hidden; 
+            height: 100vh; 
+            width: 100vw; 
+            transition: background-color 0.3s;
+        }
+
+        /* TELA DE DISPOSITIVO */
+        #deviceScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #0c111d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10020; 
+            transition: opacity 0.5s ease;
+        }
+
+        /* CONTROLES MOBILE NO CANTO INFERIOR DIREITO (PADRÃO DESKTOP/TABLET) */
+        #mobileControls {
+            display: none; 
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 10000;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            pointer-events: auto;
+        }
+
+        .mob-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .mob-btn {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.15);
+            border: 2px solid rgba(16, 185, 129, 0.4);
+            color: #10b981;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            outline: none;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        .mob-btn:active {
+            background: rgba(16, 185, 129, 0.5);
+            transform: scale(0.9);
+        }
+
+        /* TELA DE INÍCIO (START SCREEN) */
+        #startScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #0c111d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10010;
+            transition: opacity 0.5s ease;
+        }
+
+        .start-container {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 650px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .start-container h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #10b981; 
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            text-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .start-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .start-img {
+            width: 100%;
+            max-height: 240px;
+            object-fit: contain;
+            background-color: #050911;
+            border-radius: 16px;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .color-selector-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 50px;
+            width: fit-content;
+            margin: 0 auto 25px auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .color-selector-label {
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #cbd5e1;
+            letter-spacing: 0.5px;
+        }
+
+        #snakeColorPicker {
+            border: none;
+            background: none;
+            cursor: pointer;
+            width: 40px;
+            height: 26px;
+            border-radius: 6px;
+            outline: none;
+            padding: 0;
+            transition: transform 0.2s;
+        }
+
+        #snakeColorPicker:hover {
+            transform: scale(1.1);
+        }
+
+        .mode-selection {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 380px;
+            margin: 0 auto 20px auto;
+        }
+
+        .start-btn {
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            position: relative; 
+        }
+
+        .normal-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.4);
+        }
+
+        .normal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px -5px rgba(16, 185, 129, 0.6);
+            background: linear-gradient(135deg, #34d399, #059669);
+        }
+
+        .infinite-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4);
+        }
+
+        .infinite-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px -5px rgba(59, 130, 246, 0.6);
+            background: linear-gradient(135deg, #60a5fa, #1d4ed8);
+        }
+
+        .btn-desc {
+            font-size: 11px;
+            font-weight: 400;
+            opacity: 0.85;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .btn-tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+            margin-left: 10px;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(10px);
+            color: #cbd5e1;
+            text-align: left;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            width: 290px;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.5;
+            z-index: 100;
+            transition: all 0.3s ease;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            pointer-events: none;
+            text-transform: none;
+            letter-spacing: normal;
+            font-family: 'Lato', sans-serif;
+        }
+
+        .btn-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 100%;
+            margin-top: -8px;
+            border-width: 8px;
+            border-style: solid;
+            border-color: transparent rgba(15, 23, 42, 0.98) transparent transparent;
+        }
+
+        .start-btn:hover .btn-tooltip {
+            visibility: visible;
+            opacity: 1;
+            margin-left: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .btn-tooltip { display: none; }
+        }
+
+        .btn-tooltip ul { list-style: none; padding: 0; margin: 0; }
+        .btn-tooltip li { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 8px; }
+        .btn-tooltip li:last-child { margin-bottom: 0; }
+        .btn-tooltip strong { color: #fff; }
+
+        .instructions-text {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* HUD */
+        .hud-overlay { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            pointer-events: none; 
+            padding: 30px; 
+            display: none; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            z-index: 10; 
+        }
+        
+        .hud-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .hud-title-container { text-align: center; position: absolute; left: 50%; transform: translateX(-50%); }
+        
+        h1 { 
+            font-family: 'Poppins', sans-serif; 
+            font-weight: 700; 
+            font-size: 24px; 
+            letter-spacing: 3px; 
+            text-transform: uppercase; 
+            color: #fff; 
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5); 
+            transition: all 0.3s ease;
+        }
+        
+        .hud-card { 
+            background: rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 12px; 
+            padding: 12px 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3); 
+        }
+        
+        .hud-card i { font-size: 20px; color: #10b981; }
+        .hud-label { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; text-transform: uppercase; color: rgba(255, 255, 255, 0.5); }
+        .hud-value { font-size: 20px; font-weight: 700; }
+
+        /* ALERTAS DE STATUS */
+        .status-alert { 
+            position: absolute; left: 50%; transform: translateX(-50%); 
+            padding: 8px 24px; border-radius: 50px; display: none; align-items: center; 
+            gap: 8px; font-family: 'Poppins', sans-serif; font-weight: 700; z-index: 20; 
+        }
+        
+        #magicAlert { top: 110px; background: linear-gradient(135deg, rgba(219, 39, 119, 0.9), rgba(131, 24, 67, 0.9)); box-shadow: 0 0 15px rgba(219, 39, 119, 0.4); }
+        #poisonAlert { top: 160px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(6, 95, 70, 0.9)); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+        #luckyAlert { top: 210px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(180, 83, 9, 0.9)); box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+        #passiveAlert { top: 110px; background: linear-gradient(135deg, #7c3aed, #4c1d95); box-shadow: 0 0 15px rgba(124, 58, 237, 0.5); }
+
+        /* 📱 AJUSTES MOBILE EXCLUSIVOS */
+        @media (max-width: 768px) {
+            .hud-overlay {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 14px;
+                letter-spacing: 1px;
+            }
+
+            .hud-card {
+                padding: 6px 10px;
+                gap: 6px;
+                border-radius: 8px;
+            }
+
+            .hud-card i {
+                font-size: 14px;
+            }
+
+            .hud-label {
+                font-size: 8px;
+            }
+
+            .hud-value {
+                font-size: 13px;
+            }
+
+            #musicStatus {
+                font-size: 10px !important;
+            }
+
+            #magicAlert { top: 110px; }
+            #poisonAlert { top: 150px; }
+            #luckyAlert { top: 190px; }
+            #passiveAlert { top: 110px; }
+
+            /* POSICIONA AS SETINHAS NO CENTRO EMBAIXO NO CELULAR */
+            #mobileControls {
+                right: 50% !important;
+                transform: translateX(50%);
+                bottom: 30px;
+            }
+        }
+
+        #scaryOverlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 10000; object-fit: contain; }
+        
+        #startMsg { 
+            position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); 
+            font-size: 12px; letter-spacing: 2px; text-transform: uppercase; 
+            color: rgba(255,255,255,0.4); animation: breathe 2s infinite alternate; text-align: center;
+        }
+        
+        @keyframes breathe { from { opacity: 0.2; } to { opacity: 0.8; } }
+        
+        canvas { display: block; background: #0c111d; transition: filter 0.5s; }
+        .poisoned-canvas { filter: sepia(0.8) hue-rotate(90deg) contrast(1.2); }
+
+        @keyframes canvasFlash { 0% { background-color: #0c111d; } 50% { background-color: #000000; } 100% { background-color: #0c111d; } }
+        .flash-active canvas { animation: canvasFlash 0.3s ease-out; }
+
+        /* MODAL DE GAME OVER */
+        #gameOverModal {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(16px);
+            border: 2px solid #ef4444; border-radius: 16px; padding: 40px; text-align: center;
+            z-index: 10005; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(239, 68, 68, 0.2);
+            width: 90%; max-width: 450px;
+        }
+
+        #gameOverModal h2 { font-family: 'Poppins', sans-serif; font-size: 32px; color: #ef4444; margin-bottom: 20px; letter-spacing: 2px; text-transform: uppercase; }
+        #gameOverModal p { font-size: 18px; margin-bottom: 12px; color: #cbd5e1; }
+        #gameOverModal span { font-weight: 700; color: #fff; }
+
+        .gameover-btn-container { display: flex; gap: 15px; margin-top: 25px; justify-content: center; }
+        .gov-btn {
+            color: #fff; border: none; padding: 12px 20px; font-size: 14px; font-weight: 700; font-family: 'Poppins', sans-serif;
+            border-radius: 8px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; text-transform: uppercase; letter-spacing: 1px; flex: 1;
+        }
+        #restartBtn { background: linear-gradient(135deg, #10b981, #059669); }
+        #restartBtn:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+        #menuBtn { background: linear-gradient(135deg, #475569, #334155); }
+        #menuBtn:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(71, 85, 105, 0.4); }
+
+        /* MODAL DE VITÓRIA */
+        #victoryModal {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(15, 23, 42, 0.97); backdrop-filter: blur(20px); border: 2px solid #eab308; 
+            border-radius: 20px; padding: 25px 35px; text-align: center; z-index: 10006;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(234, 179, 8, 0.3); width: 90%; max-width: 480px; max-height: 90vh; overflow-y: auto;
+        }
+
+        #victoryModal h2 { font-family: 'Poppins', sans-serif; font-size: 26px; color: #eab308; margin-bottom: 5px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
+        #victoryModal p { font-size: 15px; margin-bottom: 15px; color: #cbd5e1; }
+        #victoryModal span { font-weight: 700; color: #fff; }
+
+        .image-container { width: 100%; max-width: 320px; margin: 0 auto 20px auto; border-radius: 12px; border: 2px solid rgba(234, 179, 8, 0.3); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5); background-color: #0c111d; }
+        .image-container img { width: 100%; height: auto; display: block; }
+        .victory-btn-container { display: flex; gap: 15px; justify-content: center; }
+        .vic-btn { border: none; padding: 12px 25px; font-size: 14px; font-weight: 700; font-family: 'Poppins', sans-serif; border-radius: 8px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; text-transform: uppercase; letter-spacing: 1px; flex: 1; }
+        #victoryRestartBtn { background: linear-gradient(135deg, #eab308, #ca8a04); color: #0c111d; }
+        #victoryRestartBtn:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(234, 179, 8, 0.5); }
+        #victoryMenuBtn { background: linear-gradient(135deg, #475569, #334155); color: #fff; }
+        #victoryMenuBtn:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(71, 85, 105, 0.4); }
+    </style>
+</head>
+<body>
+
+    <div id="deviceScreen">
+        <div class="start-container">
+            <h2>Dispositivo</h2>
+            <div class="start-subtitle">Como você vai jogar?</div>
+            
+            <div class="mode-selection">
+                <button class="start-btn normal-btn" onclick="selectDevice('desktop')">
+                    <i class="fa-solid fa-desktop"></i> Computador
+                </button>
+                
+                <button class="start-btn infinite-btn" onclick="selectDevice('mobile')">
+                    <i class="fa-solid fa-mobile-screen"></i> Celular
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="mobileControls">
+        <button class="mob-btn" onclick="simularTecla(38)"><i class="fa-solid fa-arrow-up"></i></button>
+        <div class="mob-row">
+            <button class="mob-btn" onclick="simularTecla(37)"><i class="fa-solid fa-arrow-left"></i></button>
+            <button class="mob-btn" onclick="simularTecla(40)"><i class="fa-solid fa-arrow-down"></i></button>
+            <button class="mob-btn" onclick="simularTecla(39)"><i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <div id="startScreen">
+        <div class="start-container">
+            <h2>Jogo da Cobrinha</h2>
+            <div class="start-subtitle">Premium Edition</div>
+            
+            <img class="start-img" src="https://universoretro.com.br/wp-content/uploads/2021/03/snake.jpg" alt="">
+            
+            <div class="color-selector-container">
+                <i class="fa-solid fa-palette" style="color: #10b981; font-size: 16px;"></i>
+                <span class="color-selector-label">Escolha a cor:</span>
+                <input type="color" id="snakeColorPicker" value="#10b981">
+            </div>
+
+            <div class="mode-selection">
+                <button class="start-btn normal-btn" onclick="iniciarJogoCompleto('normal')">
+                    <i class="fa-solid fa-trophy"></i> Modo Normal <span class="btn-desc">(Alvo: 500 pts)</span>
+                    
+                    <div class="btn-tooltip">
+                        <ul>
+                            <li>🍎 <strong>Maçã Clássica:</strong> O feijão com arroz. Te alimenta e te faz crescer.</li>
+                            <li>🍏 <strong>Maçã Podre:</strong> Coragem? Pode ser o seu dia de sorte, ou o início do seu pesadelo...</li>
+                            <li>🍄 <strong>Cogumelo:</strong> Um gostinho de poder divino. Altera a sua realidade por poucos segundos.</li>
+                        </ul>
+                    </div>
+                </button>
+                
+                <button class="start-btn infinite-btn" onclick="iniciarJogoCompleto('infinite')">
+                    <i class="fa-solid fa-infinity"></i> Modo Infinito <span class="btn-desc">(Sem Limites)</span>
+                    
+                    <div class="btn-tooltip">
+                        <ul>
+                            <li>❌ <strong>Itens Especiais:</strong> A natureza aqui é morta. Cogumelos e maçãs podres não nascem.</li>
+                            <li>⚡ <strong>O Imprevisível:</strong> O universo dita as regras. Passivas aleatórias vão te ajudar ou te destruir ao longo do tempo.</li>
+                        </ul>
+                    </div>
+                </button>
+            </div>
+            
+            <div class="instructions-text">
+                Controles: Use as setas, WASD ou botões no canto da tela para guiar a cobra.
+            </div>
+        </div>
+    </div>
+
+    <img id="scaryOverlay" src="https://i.pinimg.com/474x/a6/42/16/a64216c7d91bf764f897c7500ee7ae98.jpg" alt="Susto">
+
+    <div id="gameOverModal">
+        <h2>Fim de Jogo!</h2>
+        <p>Pontuação Final: <span id="finalScore">0</span></p>
+        <p>Tempo Sobrevivido: <span id="finalTime">00:00</span></p>
+        <div class="gameover-btn-container">
+            <button id="restartBtn" class="gov-btn" onclick="restartGame(false)">Reiniciar</button>
+            <button id="menuBtn" class="gov-btn" onclick="restartGame(true)">Menu</button>
+        </div>
+    </div>
+
+    <div id="victoryModal">
+        <h2>🏆 VOCÊ GANHOU! 🏆</h2>
+        <p>Incrível! Você completou o modo normal atingindo <span id="victoryScore">0</span> pontos em <span id="victoryTime">00:00</span>!</p>
+        
+        <div class="image-container">
+            <img id="victoryImage" src="https://i.pinimg.com/474x/e1/69/96/e16996de8f95ffad7527687f1c2b6bfa.jpg" alt="[Gato fazendo joinha]">
+        </div>
+        
+        <div class="victory-btn-container">
+            <button id="victoryRestartBtn" class="vic-btn" onclick="restartGame(false)">Jogar Denovo</button>
+            <button id="victoryMenuBtn" class="vic-btn" onclick="restartGame(true)">Menu</button>
+        </div>
+    </div>
+
+    <div class="hud-overlay" id="hudOverlay">
+        <div class="hud-header">
+            <div class="hud-card">
+                <i class="fa-solid fa-trophy"></i>
+                <div>
+                    <div class="hud-label">Pontos</div>
+                    <div id="scoreVal" class="hud-value">0</div>
+                </div>
+            </div>
+            <div class="hud-title-container">
+                <h1 id="hudTitle">Jogo da Cobrinha</h1>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px; align-items: flex-end;">
+                <div class="hud-card">
+                    <i class="fa-solid fa-clock"></i>
+                    <div>
+                        <div class="hud-label">Duração</div>
+                        <div id="timeVal" class="hud-value">00:00</div>
+                    </div>
+                </div>
+                <div class="hud-card" id="musicToggleBtn" style="pointer-events: auto; cursor: pointer; border: 1px solid rgba(16, 185, 129, 0.2);">
+                    <i class="fa-solid fa-volume-high" id="musicIcon" style="color: #10b981;"></i>
+                    <div>
+                        <div class="hud-label">Música</div>
+                        <div id="musicStatus" class="hud-value" style="font-size: 14px;">LIGADA</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="magicAlert" class="status-alert">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span id="magicText">MODO DEUS: 5.0s</span>
+        </div>
+        <div id="poisonAlert" class="status-alert">
+            <i class="fa-solid fa-skull"></i>
+            <span id="poisonText">VENENO (LENTO): 5.0s</span>
+        </div>
+        <div id="luckyAlert" class="status-alert">
+            <i class="fa-solid fa-star"></i>
+            <span id="luckyText">SORTE: +50 PONTOS!</span>
+        </div>
+
+        <div id="passiveAlert" class="status-alert">
+            <i class="fa-solid fa-bolt"></i>
+            <span id="passiveText">PASSIVA ATIVADA!</span>
+        </div>
+        
+        <div id="startMsg">Pressione qualquer botão de seta ou rasteje para iniciar</div>
+    </div>
+    
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const deviceScreen = document.getElementById("deviceScreen");
+        const mobileControls = document.getElementById("mobileControls");
+        let isMobile = false;
+        let size = 26; 
+
+        function selectDevice(type) {
+            if (type === 'mobile') {
+                isMobile = true;
+                size = 14; 
+            } else {
+                isMobile = false;
+                size = 26;
+            }
+            
+            deviceScreen.style.opacity = 0;
+            setTimeout(() => {
+                deviceScreen.style.display = "none";
+            }, 500);
+        }
+
+        function simularTecla(codigo) {
+            const evento = new KeyboardEvent("keydown", { keyCode: codigo });
+            document.dispatchEvent(evento);
+        }
+
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const scoreDisplay = document.getElementById("scoreVal");
+        const timeDisplay = document.getElementById("timeVal");
+        const hudTitle = document.getElementById("hudTitle");
+        
+        const magicAlert = document.getElementById("magicAlert");
+        const magicText = document.getElementById("magicText");
+        const poisonAlert = document.getElementById("poisonAlert");
+        const poisonText = document.getElementById("poisonText");
+        const luckyAlert = document.getElementById("luckyAlert");
+        const passiveAlert = document.getElementById("passiveAlert");
+        const passiveText = document.getElementById("passiveText");
+        const colorPicker = document.getElementById("snakeColorPicker");
+        const musicToggleBtn = document.getElementById("musicToggleBtn");
+        const musicIcon = document.getElementById("musicIcon");
+        const musicStatus = document.getElementById("musicStatus");
+        
+        const gameOverModal = document.getElementById("gameOverModal");
+        const finalScore = document.getElementById("finalScore");
+        const finalTime = document.getElementById("finalTime");
+
+        const victoryModal = document.getElementById("victoryModal");
+        const victoryScore = document.getElementById("victoryScore");
+        const victoryTime = document.getElementById("victoryTime");
+        const victoryImage = document.getElementById("victoryImage");
+        
+        const scaryOverlay = document.getElementById("scaryOverlay");
+        const startMsg = document.getElementById("startMsg");
+        const startScreen = document.getElementById("startScreen");
+
+        const bgMusic = new Audio("https://files.catbox.moe/hcpxnm.mp3");
+        const scareSound = new Audio("https://www.myinstants.com/media/sounds/fnaf-jumpscare-sound.mp3");
+        bgMusic.loop = true; 
+        bgMusic.volume = 0.3; 
+        scareSound.volume = 1.0; 
+
+        let isMusicPausedManually = false;
+
+        document.addEventListener("click", () => {
+            bgMusic.play().then(() => {
+                bgMusic.pause();
+            }).catch(e => console.log("Aguardando interação..."));
+        }, { once: true });
+
+        musicToggleBtn.addEventListener("click", () => {
+            if (bgMusic.paused) {
+                bgMusic.play().then(() => {
+                    isMusicPausedManually = false;
+                    musicIcon.className = "fa-solid fa-volume-high";
+                    musicIcon.style.color = "#10b981";
+                    musicStatus.innerText = "LIGADA";
+                }).catch(e => console.log("Erro ao tocar música:", e));
+            } else {
+                bgMusic.pause();
+                isMusicPausedManually = true;
+                musicIcon.className = "fa-solid fa-volume-xmark";
+                musicIcon.style.color = "#ef4444";
+                musicStatus.innerText = "PAUSADA";
+            }
+        });
+
+        let gameMode = 'normal'; 
+        let snakeColor = "#10b981"; 
+        let snakeOutlineColor = "#022c22"; 
+        
+        let luckyTimerTimeout = null;
+
+        let passiveTimeout = null;
+        let currentPassive = 0; 
+        let passiveEndTime = 0;
+        let flashInterval = null;
+
+        colorPicker.addEventListener("input", (e) => {
+            snakeColor = e.target.value;
+            snakeOutlineColor = shadeColor(snakeColor, 0.25);
+        });
+
+        function shadeColor(hex, factor) {
+            let num = parseInt(hex.replace("#",""), 16),
+                R = (num >> 16),
+                G = (num >> 8 & 0x00FF),
+                B = (num & 0x0000FF);
+            
+            R = Math.floor(R * factor);
+            G = Math.floor(G * factor);
+            B = Math.floor(B * factor);
+            
+            return "#" + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+        }
+
+        function iniciarJogoCompleto(mode) {
+            gameMode = mode;
+            
+            if (mode === 'normal') {
+                hudTitle.innerText = "Cobrinha (Normal)";
+            } else {
+                hudTitle.innerText = "Cobrinha (Infinito)";
+            }
+
+            document.getElementById("hudOverlay").style.display = "flex";
+
+            startScreen.style.opacity = 0;
+            setTimeout(() => {
+                startScreen.style.display = "none";
+            }, 500);
+            
+            if (isMobile) {
+                mobileControls.style.display = "flex";
+            }
+
+            if (!isMusicPausedManually) {
+                bgMusic.play().then(() => {
+                    console.log("Música de fundo iniciada.");
+                }).catch(e => {
+                    bgMusic.play();
+                });
+            }
+        }
+
+        function resize() { 
+            canvas.width = window.innerWidth; 
+            canvas.height = window.innerHeight; 
+        }
+        window.addEventListener('resize', resize); 
+        resize();
+
+        let score = 0;
+        let x = canvas.width / 2;
+        let y = canvas.height / 2;
+        let vx = 0;
+        let vy = 0;
+        const baseSpeed = 1.5; 
+        let curSpeed = baseSpeed;
+        
+        let path = [];
+        let snakeLen = 5;
+        const spacing = 4; 
+        
+        let food = spawn();
+        let mushroom = null;
+        let rotten = null;
+        
+        let mTimer = null;
+        let rTimer = null;
+        let trip = false;
+        let tripEnd = 0;
+        let startMatch = null;
+        let started = false;
+        let over = false;
+        
+        let isScaring = false; 
+        let isPoisoned = false;
+        let poisonEnd = 0;
+
+        function initSnake() {
+            x = canvas.width / 2;
+            y = canvas.height / 2;
+            vx = 0;
+            vy = 0;
+            curSpeed = baseSpeed;
+            snakeLen = 5;
+            path = [];
+            for (let i = 0; i < snakeLen * spacing; i++) {
+                path.push({x: x, y: y});
+            }
+        }
+        initSnake();
+
+        function spawn() { 
+            return { 
+                x: Math.random() * (canvas.width - 120) + 60, 
+                y: Math.random() * (canvas.height - 120) + 60 
+            }; 
+        }
+
+        document.addEventListener("keydown", e => {
+            if (isScaring || over) return; 
+
+            if (startScreen.style.display !== "none" || deviceScreen.style.display !== "none") return;
+
+            const validKeys = [37, 38, 39, 40, 65, 68, 83, 87]; 
+            if(validKeys.includes(e.keyCode)) {
+                e.preventDefault();
+                if(!started) {
+                    started = true; 
+                    startMatch = Date.now(); 
+                    startMsg.style.display = "none";
+                    
+                    if (gameMode === 'normal') {
+                        mTimer = setInterval(() => { if(!mushroom) mushroom = spawn(); }, 20000);
+                        rTimer = setInterval(() => { if(!rotten) rotten = spawn(); }, 15000);
+                    } else if (gameMode === 'infinite') {
+                        startPassiveTimeoutChain();
+                    }
+                }
+                
+                if ((e.keyCode == 37 || e.keyCode == 65) && vx <= 0) { vx = -curSpeed; vy = 0; }
+                if ((e.keyCode == 38 || e.keyCode == 87) && vy <= 0) { vx = 0; vy = -curSpeed; }
+                if ((e.keyCode == 39 || e.keyCode == 68) && vx >= 0) { vx = curSpeed; vy = 0; }
+                if ((e.keyCode == 40 || e.keyCode == 83) && vy >= 0) { vx = 0; vy = curSpeed; } 
+            }
+        });
+
+        function startPassiveTimeoutChain() {
+            clearPassiveTimers();
+            passiveTimeout = setTimeout(() => {
+                if (!over && started && gameMode === 'infinite') {
+                    triggerRandomPassive();
+                }
+            }, 60000); 
+        }
+
+        function clearPassiveTimers() {
+            if (passiveTimeout) {
+                clearTimeout(passiveTimeout);
+                passiveTimeout = null;
+            }
+            if (flashInterval) {
+                clearInterval(flashInterval);
+                flashInterval = null;
+            }
+            document.body.classList.remove("flash-active");
+        }
+
+        function triggerRandomPassive() {
+            if (currentPassive === 1 || currentPassive === 2) {
+                curSpeed = baseSpeed;
+                resetVelocity();
+            }
+            if (currentPassive === 5) {
+                trip = false;
+                tripEnd = 0;
+            }
+            clearPassiveTimers();
+
+            let roll = Math.floor(Math.random() * 5) + 1;
+            currentPassive = roll;
+            passiveAlert.style.display = "flex";
+
+            if (roll === 1) {
+                curSpeed = baseSpeed * 1.6;
+                resetVelocity();
+                passiveEndTime = Date.now() + 30000;
+            } else if (roll === 2) {
+                curSpeed = baseSpeed * 0.7; 
+                resetVelocity();
+                passiveEndTime = Date.now() + 30000;
+            } else if (roll === 3) {
+                passiveEndTime = Date.now() + 15000;
+
+                document.body.classList.add("flash-active");
+                setTimeout(() => document.body.classList.remove("flash-active"), 300);
+
+                flashInterval = setInterval(() => {
+                    document.body.classList.add("flash-active");
+                    setTimeout(() => {
+                        document.body.classList.remove("flash-active");
+                    }, 300);
+                }, 2000);
+            } else if (roll === 4) {
+                passiveEndTime = Date.now() + 4000;
+            } else if (roll === 5) {
+                trip = true;
+                tripEnd = Date.now() + 30000;
+                passiveEndTime = Date.now() + 30000;
+            }
+        }
+
+        function format(ms) { 
+            let s = Math.floor(ms/1000); 
+            return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; 
+        }
+
+        function gameLoop() {
+            if (over) return;
+            requestAnimationFrame(gameLoop);
+            
+            if (isScaring) {
+                drawScene(); 
+                return; 
+            }
+
+            updateLogic();
+            drawScene();
+        }
+
+        function checkVictory() {
+            if (gameMode === 'normal' && score >= 500 && !over) {
+                triggerVictory();
+            }
+        }
+
+        function triggerVictory() {
+            over = true;
+            started = false;
+            clearInterval(mTimer); 
+            clearInterval(rTimer); 
+            clearPassiveTimers();
+            bgMusic.pause();
+
+            victoryScore.innerText = score;
+            victoryTime.innerText = format(Date.now() - startMatch);
+            victoryModal.style.display = "block";
+        }
+
+        function updateLogic() {
+            if(!started) return;
+
+            timeDisplay.innerText = format(Date.now() - startMatch);
+
+            if (gameMode === 'infinite' && currentPassive > 0) {
+                let timeLeft = passiveEndTime - Date.now();
+                if (timeLeft <= 0) {
+                    if (currentPassive === 1 || currentPassive === 2) {
+                        curSpeed = baseSpeed;
+                        resetVelocity();
+                    }
+                    if (currentPassive === 5) {
+                        trip = false;
+                        tripEnd = 0;
+                    }
+                    clearPassiveTimers();
+                    
+                    currentPassive = 0;
+                    passiveAlert.style.display = "none";
+
+                    startPassiveTimeoutChain();
+                } else {
+                    let seconds = (timeLeft / 1000).toFixed(1);
+                    if (currentPassive === 1) {
+                        passiveText.innerText = `VELOCIDADE MÁXIMA: ${seconds}s`;
+                    } else if (currentPassive === 2) {
+                        passiveText.innerText = `SUPER LENTO: ${seconds}s`;
+                    } else if (currentPassive === 3) {
+                        passiveText.innerText = `EFEITO FLASH: ${seconds}s`;
+                    } else if (currentPassive === 4) {
+                        passiveText.innerText = `SORTE: NADA ACONTECEU! (${seconds}s)`;
+                    } else if (currentPassive === 5) {
+                        passiveText.innerText = `INVENCIBILIDADE: ${seconds}s`;
+                    }
+                }
+            }
+
+            if(gameMode === 'normal' && trip) {
+                let left = tripEnd - Date.now();
+                if(left <= 0) {
+                    trip = false; 
+                    magicAlert.style.display = "none"; 
+                    curSpeed = baseSpeed;
+                    resetVelocity();
+                } else {
+                    magicAlert.style.display = "flex"; 
+                    magicText.innerText = `MODO DEUS: ${(left/1000).toFixed(1)}s`;
+                }
+            }
+            
+            if(gameMode === 'normal' && isPoisoned) {
+                 let leftP = poisonEnd - Date.now();
+                 if(leftP <= 0) {
+                     isPoisoned = false;
+                     poisonAlert.style.display = "none";
+                     canvas.classList.remove("poisoned-canvas"); 
+                     curSpeed = trip ? baseSpeed * 1.6 : baseSpeed; 
+                     resetVelocity();
+                 } else {
+                     poisonAlert.style.display = "flex"; 
+                     poisonText.innerText = `VENENO (LENTO): ${(leftP/1000).toFixed(1)}s`;
+                 }
+            }
+
+            x += vx; 
+            y += vy;
+            
+            if(trip || (gameMode === 'infinite' && currentPassive === 5)) {
+                let teleported = false;
+                let dx = 0;
+                let dy = 0;
+
+                if(x < 0) { x = canvas.width; dx = canvas.width; teleported = true; } 
+                else if(x > canvas.width) { x = 0; dx = -canvas.width; teleported = true; }
+                
+                if(y < 0) { y = canvas.height; dy = canvas.height; teleported = true; } 
+                else if(y > canvas.height) { y = 0; dy = -canvas.height; teleported = true; }
+
+                if(teleported) {
+                    path = path.map(p => ({ x: p.x + dx, y: p.y + dy }));
+                }
+            } else if(x < 0 || y < 0 || x > canvas.width || y > canvas.height) { 
+                triggerGameOver(); 
+                return; 
+            }
+
+            path.unshift({x, y});
+            if(path.length > snakeLen * spacing) path.pop();
+
+            if(Math.hypot(x-food.x, y-food.y) < size) { 
+                score += 10; 
+                scoreDisplay.innerText = score; 
+                snakeLen += 4; 
+                food = spawn(); 
+                checkVictory(); 
+            }
+            
+            if(gameMode === 'normal' && mushroom && Math.hypot(x-mushroom.x, y-mushroom.y) < size) {
+                mushroom = null; 
+                trip = true; 
+                tripEnd = Date.now() + 5000; 
+                if(!isPoisoned) {
+                     curSpeed = baseSpeed * 1.6;
+                     resetVelocity();
+                }
+            }
+            
+            if(gameMode === 'normal' && rotten && Math.hypot(x-rotten.x, y-rotten.y) < size) {
+                rotten = null; 
+                
+                let roleta = Math.random();
+                
+                if (roleta < 0.33) {
+                    triggerSusto();
+                } else if (roleta < 0.66) {
+                    isPoisoned = true;
+                    poisonEnd = Date.now() + 5000;
+                    canvas.classList.add("poisoned-canvas"); 
+                    curSpeed = baseSpeed * 0.5; 
+                    resetVelocity();
+                } else {
+                    score += 50;
+                    scoreDisplay.innerText = score;
+                    luckyAlert.style.display = "flex";
+                    
+                    clearTimeout(luckyTimerTimeout);
+                    luckyTimerTimeout = setTimeout(() => {
+                        luckyAlert.style.display = "none";
+                    }, 2000);
+
+                    checkVictory(); 
+                }
+            }
+        }
+
+        function drawScene() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.font = isMobile ? "16px Arial" : "24px Arial"; 
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("🍎", food.x, food.y);
+            
+            if (gameMode === 'normal') {
+                if(mushroom) ctx.fillText("🍄", mushroom.x, mushroom.y);
+                if(rotten) ctx.fillText("🍏", rotten.x, rotten.y);
+            }
+
+            if(!started) { 
+                if (startScreen.style.display !== "none" || deviceScreen.style.display !== "none") return;
+
+                ctx.fillStyle = snakeOutlineColor;
+                ctx.beginPath();
+                ctx.arc(x, y, (size/2) + 2.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = snakeColor; 
+                ctx.beginPath();
+                ctx.arc(x, y, size/2, 0, Math.PI * 2);
+                ctx.fill();
+                return; 
+            }
+
+            let radius = size / 2;
+
+            let points = [];
+            for (let i = 0; i < snakeLen; i++) {
+                let idx = i * spacing;
+                if (idx >= path.length) idx = path.length - 1;
+                points.push(path[idx]);
+            }
+
+            let isInvincible = trip || (gameMode === 'infinite' && currentPassive === 5);
+
+            if (!isInvincible) {
+                ctx.beginPath();
+                ctx.lineWidth = size + 5; 
+                ctx.lineCap = "round";
+                ctx.lineJoin = "round";
+                ctx.strokeStyle = isPoisoned ? "#022c22" : snakeOutlineColor;
+                for (let i = 0; i < points.length; i++) {
+                    if (i === 0) ctx.moveTo(points[i].x, points[i].y);
+                    else ctx.lineTo(points[i].x, points[i].y);
+                }
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.lineWidth = size; 
+                ctx.lineCap = "round";
+                ctx.lineJoin = "round";
+                ctx.strokeStyle = isPoisoned ? "#84cc16" : snakeColor;
+                for (let i = 0; i < points.length; i++) {
+                    if (i === 0) ctx.moveTo(points[i].x, points[i].y);
+                    else ctx.lineTo(points[i].x, points[i].y);
+                }
+                ctx.stroke();
+            } else {
+                for (let i = 0; i < points.length - 1; i++) {
+                    let p1 = points[i];
+                    let p2 = points[i+1];
+                    if (Math.hypot(p1.x - p2.x, p1.y - p2.y) > size * 2) continue;
+                    ctx.beginPath();
+                    ctx.lineWidth = size + 5;
+                    ctx.lineCap = "round";
+                    ctx.strokeStyle = snakeOutlineColor;
+                    ctx.moveTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.stroke();
+                }
+
+                for (let i = 0; i < points.length - 1; i++) {
+                    let p1 = points[i];
+                    let p2 = points[i+1];
+                    if (Math.hypot(p1.x - p2.x, p1.y - p2.y) > size * 2) continue;
+                    ctx.beginPath();
+                    ctx.lineWidth = size;
+                    ctx.lineCap = "round";
+                    
+                    if (trip) {
+                        let hue1 = (Date.now() / 3 + i * 10) % 360;
+                        ctx.strokeStyle = `hsl(${hue1}, 100%, 50%)`;
+                    } else {
+                        ctx.strokeStyle = snakeColor;
+                    }
+                    ctx.moveTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.stroke();
+                }
+            }
+
+            if (points.length > 0) {
+                let head = points[0];
+                let angle = Math.atan2(vy, vx);
+                if (vx === 0 && vy === 0) angle = 0; 
+
+                let eyeOffsetAngle = 0.55; 
+                let eyeDist = radius * 0.5; 
+                let eyeRadius = radius * 0.28;
+                let pupilRadius = eyeRadius * 0.5;
+
+                let eyes = [eyeOffsetAngle, -eyeOffsetAngle];
+                
+                eyes.forEach(offset => {
+                    let ex = head.x + Math.cos(angle + offset) * eyeDist;
+                    let ey = head.y + Math.sin(angle + offset) * eyeDist;
+
+                    ctx.beginPath();
+                    ctx.fillStyle = isPoisoned ? "#022c22" : snakeOutlineColor;
+                    ctx.arc(ex, ey, eyeRadius + 1, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.fillStyle = "#ffffff";
+                    ctx.arc(ex, ey, eyeRadius, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.fillStyle = "#000000";
+                    let px = ex + Math.cos(angle) * (eyeRadius * 0.3);
+                    let py = ey + Math.sin(angle) * (eyeRadius * 0.3);
+                    ctx.arc(px, py, pupilRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            for (let i = 8; i < points.length; i++) {
+                if (!isInvincible && Math.hypot(x - points[i].x, y - points[i].y) < size/2 && !isScaring) {
+                    triggerGameOver();
+                }
+            }
+        }
+
+        function triggerSusto() {
+            isScaring = true;
+            scaryOverlay.style.display = "block"; 
+            bgMusic.pause(); 
+            scareSound.currentTime = 0;
+            scareSound.play().catch(e => console.log("Erro no som do susto"));
+
+            setTimeout(() => { 
+                scaryOverlay.style.display = "none"; 
+                isScaring = false;
+                if(!over && !isMusicPausedManually) bgMusic.play(); 
+            }, 4000); 
+        }
+
+        function resetVelocity() {
+            if(vx > 0) vx = curSpeed; else if(vx < 0) vx = -curSpeed;
+            if(vy > 0) vy = curSpeed; else if(vy < 0) vy = -curSpeed;
+        }
+
+        function triggerGameOver() {
+            over = true;
+            started = false;
+            clearInterval(mTimer); 
+            clearInterval(rTimer); 
+            clearPassiveTimers();
+            bgMusic.pause();
+            
+            finalScore.innerText = score;
+            finalTime.innerText = format(Date.now() - startMatch);
+            gameOverModal.style.display = "block";
+        }
+
+        function restartGame(goToMenu = false) {
+            gameOverModal.style.display = "none";
+            victoryModal.style.display = "none";
+            
+            over = false;
+            started = false;
+            score = 0;
+            scoreDisplay.innerText = "0";
+            timeDisplay.innerText = "00:00";
+            startMatch = null;
+            
+            initSnake();
+            
+            food = spawn();
+            mushroom = null;
+            rotten = null;
+            
+            clearInterval(mTimer);
+            clearInterval(rTimer);
+            clearPassiveTimers();
+            mTimer = null;
+            rTimer = null;
+
+            currentPassive = 0;
+            passiveEndTime = 0;
+            passiveAlert.style.display = "none";
+            
+            trip = false;
+            tripEnd = 0;
+            magicAlert.style.display = "none";
+            
+            isPoisoned = false;
+            poisonEnd = 0;
+            poisonAlert.style.display = "none";
+            canvas.classList.remove("poisoned-canvas");
+            
+            isScaring = false;
+            scaryOverlay.style.display = "none";
+            
+            bgMusic.pause();
+            bgMusic.currentTime = 0;
+            
+            if (goToMenu) {
+                document.getElementById("hudOverlay").style.display = "none";
+                startScreen.style.display = "flex";
+                startScreen.style.opacity = 1;
+                startMsg.style.display = "block";
+                mobileControls.style.display = "none"; 
+            } else {
+                iniciarJogoCompleto(gameMode);
+            }
+
+            gameLoop();
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
