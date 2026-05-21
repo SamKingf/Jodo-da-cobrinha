@@ -18,6 +18,9 @@
             height: 100vh; 
             width: 100vw; 
             transition: background-color 0.3s;
+            overscroll-behavior: none; 
+            display: flex;
+            flex-direction: column;
         }
 
         /* TELA DE DISPOSITIVO */
@@ -35,7 +38,7 @@
             transition: opacity 0.5s ease;
         }
 
-        /* CONTROLES MOBILE NO CANTO INFERIOR DIREITO (PADRÃO DESKTOP/TABLET) */
+        /* CONTROLES MOBILE NO CANTO INFERIOR DIREITO */
         #mobileControls {
             display: none; 
             position: fixed;
@@ -67,11 +70,11 @@
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.1s ease;
             outline: none;
             user-select: none;
             -webkit-user-select: none;
-            touch-action: manipulation;
+            touch-action: manipulation; 
         }
 
         .mob-btn:active {
@@ -136,6 +139,16 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
         }
 
+        /* CONTAINER DOS SELETORES (COR E MÚSICA) */
+        .selectors-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 0 auto 25px auto;
+        }
+
         .color-selector-container {
             display: flex;
             align-items: center;
@@ -145,8 +158,6 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 10px 20px;
             border-radius: 50px;
-            width: fit-content;
-            margin: 0 auto 25px auto;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
@@ -174,6 +185,25 @@
         #snakeColorPicker:hover {
             transform: scale(1.1);
         }
+
+        /* BOTÃO DE MÚSICA ESTILIZADO PARA A TELA INICIAL / JOGO */
+        .music-card-btn {
+            background: rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(16, 185, 129, 0.2); 
+            border-radius: 50px; 
+            padding: 10px 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            pointer-events: auto;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .music-card-btn i { font-size: 16px; color: #10b981; }
 
         .mode-selection {
             display: flex;
@@ -293,19 +323,29 @@
             color: #64748b;
         }
 
-        /* HUD */
+        .game-version {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 12px;
+            color: rgba(148, 163, 184, 0.6);
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: 1px;
+            z-index: 10012;
+            pointer-events: none;
+        }
+
+        /* HUD - AGORA RELATIVA PARA NÃO SOBREPOR A ARENA */
         .hud-overlay { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
+            position: relative; 
             width: 100%; 
-            height: 100%; 
             pointer-events: none; 
-            padding: 30px; 
+            padding: 20px 30px; 
             display: none; 
             flex-direction: column; 
-            justify-content: space-between; 
             z-index: 10; 
+            background: rgba(15, 23, 42, 0.4);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
         }
         
         .hud-header { display: flex; justify-content: space-between; align-items: flex-start; }
@@ -338,57 +378,63 @@
         .hud-label { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; text-transform: uppercase; color: rgba(255, 255, 255, 0.5); }
         .hud-value { font-size: 20px; font-weight: 700; }
 
-        /* ALERTAS DE STATUS */
+        /* CONTAINERS DA ARENA DE JOGO */
+        #arenaContainer {
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        canvas { 
+            display: block; 
+            background: #050911; 
+            transition: filter 0.5s; 
+            border: 3px solid rgba(16, 185, 129, 0.4);
+            border-radius: 16px;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        /* ALERTAS DE STATUS - TOP AJUSTADO P/ HUD RELATIVA */
         .status-alert { 
             position: absolute; left: 50%; transform: translateX(-50%); 
             padding: 8px 24px; border-radius: 50px; display: none; align-items: center; 
             gap: 8px; font-family: 'Poppins', sans-serif; font-weight: 700; z-index: 20; 
         }
         
-        #magicAlert { top: 110px; background: linear-gradient(135deg, rgba(219, 39, 119, 0.9), rgba(131, 24, 67, 0.9)); box-shadow: 0 0 15px rgba(219, 39, 119, 0.4); }
-        #poisonAlert { top: 160px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(6, 95, 70, 0.9)); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
-        #luckyAlert { top: 210px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(180, 83, 9, 0.9)); box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
-        #passiveAlert { top: 110px; background: linear-gradient(135deg, #7c3aed, #4c1d95); box-shadow: 0 0 15px rgba(124, 58, 237, 0.5); }
+        #magicAlert { top: 90px; background: linear-gradient(135deg, rgba(219, 39, 119, 0.9), rgba(131, 24, 67, 0.9)); box-shadow: 0 0 15px rgba(219, 39, 119, 0.4); }
+        #poisonAlert { top: 140px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(6, 95, 70, 0.9)); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+        #luckyAlert { top: 190px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(180, 83, 9, 0.9)); box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+        #passiveAlert { top: 90px; background: linear-gradient(135deg, #7c3aed, #4c1d95); box-shadow: 0 0 15px rgba(124, 58, 237, 0.5); }
 
         /* 📱 AJUSTES MOBILE EXCLUSIVOS */
         @media (max-width: 768px) {
-            .hud-overlay {
-                padding: 10px;
+            .hud-overlay { padding: 10px; }
+            h1 { font-size: 14px; letter-spacing: 1px; }
+            .hud-card { padding: 6px 10px; gap: 6px; border-radius: 8px; }
+            .hud-card i { font-size: 14px; }
+            .hud-label { font-size: 8px; }
+            .hud-value { font-size: 13px; }
+            #musicStatus { font-size: 10px !important; }
+
+            #magicAlert { top: 75px; }
+            #poisonAlert { top: 115px; }
+            #luckyAlert { top: 155px; }
+            #passiveAlert { top: 75px; }
+
+            #arenaContainer {
+                padding-left: 5px;
+                padding-right: 5px;
+                padding-bottom: 160px; 
             }
 
-            h1 {
-                font-size: 14px;
-                letter-spacing: 1px;
-            }
-
-            .hud-card {
-                padding: 6px 10px;
-                gap: 6px;
-                border-radius: 8px;
-            }
-
-            .hud-card i {
-                font-size: 14px;
-            }
-
-            .hud-label {
-                font-size: 8px;
-            }
-
-            .hud-value {
-                font-size: 13px;
-            }
-
-            #musicStatus {
-                font-size: 10px !important;
-            }
-
-            #magicAlert { top: 110px; }
-            #poisonAlert { top: 150px; }
-            #luckyAlert { top: 190px; }
-            #passiveAlert { top: 110px; }
-
-            /* POSICIONA AS SETINHAS NO CENTRO EMBAIXO NO CELULAR */
             #mobileControls {
                 right: 50% !important;
                 transform: translateX(50%);
@@ -406,7 +452,6 @@
         
         @keyframes breathe { from { opacity: 0.2; } to { opacity: 0.8; } }
         
-        canvas { display: block; background: #0c111d; transition: filter 0.5s; }
         .poisoned-canvas { filter: sepia(0.8) hue-rotate(90deg) contrast(1.2); }
 
         @keyframes canvasFlash { 0% { background-color: #0c111d; } 50% { background-color: #000000; } 100% { background-color: #0c111d; } }
@@ -477,11 +522,11 @@
     </div>
 
     <div id="mobileControls">
-        <button class="mob-btn" onclick="simularTecla(38)"><i class="fa-solid fa-arrow-up"></i></button>
+        <button class="mob-btn" onpointerdown="handleInput(38)"><i class="fa-solid fa-arrow-up"></i></button>
         <div class="mob-row">
-            <button class="mob-btn" onclick="simularTecla(37)"><i class="fa-solid fa-arrow-left"></i></button>
-            <button class="mob-btn" onclick="simularTecla(40)"><i class="fa-solid fa-arrow-down"></i></button>
-            <button class="mob-btn" onclick="simularTecla(39)"><i class="fa-solid fa-arrow-right"></i></button>
+            <button class="mob-btn" onpointerdown="handleInput(37)"><i class="fa-solid fa-arrow-left"></i></button>
+            <button class="mob-btn" onpointerdown="handleInput(40)"><i class="fa-solid fa-arrow-down"></i></button>
+            <button class="mob-btn" onpointerdown="handleInput(39)"><i class="fa-solid fa-arrow-right"></i></button>
         </div>
     </div>
 
@@ -492,10 +537,20 @@
             
             <img class="start-img" src="https://universoretro.com.br/wp-content/uploads/2021/03/snake.jpg" alt="">
             
-            <div class="color-selector-container">
-                <i class="fa-solid fa-palette" style="color: #10b981; font-size: 16px;"></i>
-                <span class="color-selector-label">Escolha a cor:</span>
-                <input type="color" id="snakeColorPicker" value="#10b981">
+            <div class="selectors-group">
+                <div class="color-selector-container">
+                    <i class="fa-solid fa-palette" style="color: #10b981; font-size: 16px;"></i>
+                    <span class="color-selector-label">Escolha a cor:</span>
+                    <input type="color" id="snakeColorPicker" value="#10b981">
+                </div>
+
+                <div class="music-card-btn" id="musicToggleBtn">
+                    <i class="fa-solid fa-volume-high" id="musicIcon" style="color: #10b981;"></i>
+                    <div>
+                        <div class="hud-label" style="font-size: 8px;">Música</div>
+                        <div id="musicStatus" style="font-size: 12px; font-weight:700; color: #fff;">LIGADA</div>
+                    </div>
+                </div>
             </div>
 
             <div class="mode-selection">
@@ -527,6 +582,7 @@
                 Controles: Use as setas, WASD ou botões no canto da tela para guiar a cobra.
             </div>
         </div>
+        <div class="game-version">Versão 1.3 mobile</div>
     </div>
 
     <img id="scaryOverlay" src="https://i.pinimg.com/474x/a6/42/16/a64216c7d91bf764f897c7500ee7ae98.jpg" alt="Susto">
@@ -564,22 +620,13 @@
                     <div id="scoreVal" class="hud-value">0</div>
                 </div>
             </div>
-            <div class="hud-title-container">
-                <h1 id="hudTitle">Jogo da Cobrinha</h1>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 12px; align-items: flex-end;">
+            <div style="display: flex; flex-direction: row; gap: 12px; align-items: center;">
+                <div id="gameMusicContainer"></div>
                 <div class="hud-card">
                     <i class="fa-solid fa-clock"></i>
                     <div>
                         <div class="hud-label">Duração</div>
                         <div id="timeVal" class="hud-value">00:00</div>
-                    </div>
-                </div>
-                <div class="hud-card" id="musicToggleBtn" style="pointer-events: auto; cursor: pointer; border: 1px solid rgba(16, 185, 129, 0.2);">
-                    <i class="fa-solid fa-volume-high" id="musicIcon" style="color: #10b981;"></i>
-                    <div>
-                        <div class="hud-label">Música</div>
-                        <div id="musicStatus" class="hud-value" style="font-size: 14px;">LIGADA</div>
                     </div>
                 </div>
             </div>
@@ -605,8 +652,11 @@
         
         <div id="startMsg">Pressione qualquer botão de seta ou rasteje para iniciar</div>
     </div>
-    
-    <canvas id="gameCanvas"></canvas>
+
+    <!-- ARENA CONTAINER LIMITA ONDE A COBRA VIVE -->
+    <div id="arenaContainer">
+        <canvas id="gameCanvas"></canvas>
+    </div>
 
     <script>
         const deviceScreen = document.getElementById("deviceScreen");
@@ -629,16 +679,42 @@
             }, 500);
         }
 
-        function simularTecla(codigo) {
-            const evento = new KeyboardEvent("keydown", { keyCode: codigo });
-            document.dispatchEvent(evento);
+        function handleInput(keyCode) {
+            if (isScaring || over) return; 
+            if (startScreen.style.display !== "none" || deviceScreen.style.display !== "none") return;
+
+            const validKeys = [37, 38, 39, 40, 65, 68, 83, 87]; 
+            if(validKeys.includes(keyCode)) {
+                if(!started) {
+                    started = true; 
+                    startMatch = Date.now(); 
+                    startMsg.style.display = "none";
+                    
+                    if (gameMode === 'normal') {
+                        mTimer = setInterval(() => { if(!mushroom) mushroom = spawn(); }, 20000);
+                        rTimer = setInterval(() => { if(!rotten) rotten = spawn(); }, 15000);
+                    } else if (gameMode === 'infinite') {
+                        startPassiveTimeoutChain();
+                    }
+                }
+                
+                if ((keyCode == 37 || keyCode == 65) && vx <= 0) { vx = -curSpeed; vy = 0; }
+                if ((keyCode == 38 || keyCode == 87) && vy <= 0) { vx = 0; vy = -curSpeed; }
+                if ((keyCode == 39 || keyCode == 68) && vx >= 0) { vx = curSpeed; vy = 0; }
+                if ((keyCode == 40 || keyCode == 83) && vy >= 0) { vx = 0; vy = curSpeed; } 
+            }
         }
+
+        document.addEventListener("keydown", e => {
+            const validKeys = [37, 38, 39, 40, 65, 68, 83, 87]; 
+            if(validKeys.includes(e.keyCode)) e.preventDefault();
+            handleInput(e.keyCode);
+        });
 
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const scoreDisplay = document.getElementById("scoreVal");
         const timeDisplay = document.getElementById("timeVal");
-        const hudTitle = document.getElementById("hudTitle");
         
         const magicAlert = document.getElementById("magicAlert");
         const magicText = document.getElementById("magicText");
@@ -648,6 +724,9 @@
         const passiveAlert = document.getElementById("passiveAlert");
         const passiveText = document.getElementById("passiveText");
         const colorPicker = document.getElementById("snakeColorPicker");
+        
+        const selectorsGroup = document.querySelector(".selectors-group");
+        const gameMusicContainer = document.getElementById("gameMusicContainer");
         const musicToggleBtn = document.getElementById("musicToggleBtn");
         const musicIcon = document.getElementById("musicIcon");
         const musicStatus = document.getElementById("musicStatus");
@@ -727,14 +806,14 @@
 
         function iniciarJogoCompleto(mode) {
             gameMode = mode;
-            
-            if (mode === 'normal') {
-                hudTitle.innerText = "Cobrinha (Normal)";
-            } else {
-                hudTitle.innerText = "Cobrinha (Infinito)";
-            }
+
+            // Movemos o botão do menu inicial para a HUD do lado esquerdo do timer
+            gameMusicContainer.appendChild(musicToggleBtn);
 
             document.getElementById("hudOverlay").style.display = "flex";
+            document.getElementById("arenaContainer").style.display = "flex";
+
+            resize();
 
             startScreen.style.opacity = 0;
             setTimeout(() => {
@@ -744,6 +823,9 @@
             if (isMobile) {
                 mobileControls.style.display = "flex";
             }
+
+            initSnake();
+            food = spawn();
 
             if (!isMusicPausedManually) {
                 bgMusic.play().then(() => {
@@ -755,8 +837,16 @@
         }
 
         function resize() { 
-            canvas.width = window.innerWidth; 
-            canvas.height = window.innerHeight; 
+            const container = document.getElementById("arenaContainer");
+            if (container && container.style.display !== "none") {
+                const paddingX = isMobile ? 10 : 40; 
+                const paddingY = isMobile ? 10 : 40; 
+                canvas.width = Math.floor(container.clientWidth - paddingX); 
+                canvas.height = Math.floor(container.clientHeight - paddingY); 
+            } else {
+                canvas.width = window.innerWidth; 
+                canvas.height = window.innerHeight; 
+            }
         }
         window.addEventListener('resize', resize); 
         resize();
@@ -804,39 +894,12 @@
         initSnake();
 
         function spawn() { 
+            const margin = isMobile ? 30 : 60;
             return { 
-                x: Math.random() * (canvas.width - 120) + 60, 
-                y: Math.random() * (canvas.height - 120) + 60 
+                x: Math.random() * (canvas.width - margin * 2) + margin, 
+                y: Math.random() * (canvas.height - margin * 2) + margin 
             }; 
         }
-
-        document.addEventListener("keydown", e => {
-            if (isScaring || over) return; 
-
-            if (startScreen.style.display !== "none" || deviceScreen.style.display !== "none") return;
-
-            const validKeys = [37, 38, 39, 40, 65, 68, 83, 87]; 
-            if(validKeys.includes(e.keyCode)) {
-                e.preventDefault();
-                if(!started) {
-                    started = true; 
-                    startMatch = Date.now(); 
-                    startMsg.style.display = "none";
-                    
-                    if (gameMode === 'normal') {
-                        mTimer = setInterval(() => { if(!mushroom) mushroom = spawn(); }, 20000);
-                        rTimer = setInterval(() => { if(!rotten) rotten = spawn(); }, 15000);
-                    } else if (gameMode === 'infinite') {
-                        startPassiveTimeoutChain();
-                    }
-                }
-                
-                if ((e.keyCode == 37 || e.keyCode == 65) && vx <= 0) { vx = -curSpeed; vy = 0; }
-                if ((e.keyCode == 38 || e.keyCode == 87) && vy <= 0) { vx = 0; vy = -curSpeed; }
-                if ((e.keyCode == 39 || e.keyCode == 68) && vx >= 0) { vx = curSpeed; vy = 0; }
-                if ((e.keyCode == 40 || e.keyCode == 83) && vy >= 0) { vx = 0; vy = curSpeed; } 
-            }
-        });
 
         function startPassiveTimeoutChain() {
             clearPassiveTimers();
@@ -1288,7 +1351,9 @@
             bgMusic.currentTime = 0;
             
             if (goToMenu) {
+                selectorsGroup.appendChild(musicToggleBtn);
                 document.getElementById("hudOverlay").style.display = "none";
+                document.getElementById("arenaContainer").style.display = "none";
                 startScreen.style.display = "flex";
                 startScreen.style.opacity = 1;
                 startMsg.style.display = "block";
