@@ -2,11 +2,9 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manutenção | Jogo da Cobrinha</title>
+    <title>Arena em Manutenção</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background-color: #0c111d;
             color: #f8fafc;
@@ -16,47 +14,30 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            overflow: hidden;
+            margin: 0;
+            padding: 20px;
         }
         .container {
             padding: 40px;
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(239, 68, 68, 0.1);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            border: 2px solid #ef4444;
             border-radius: 24px;
-            max-width: 500px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-width: 450px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
-        h1 { color: #10b981; font-size: 32px; margin-bottom: 10px; }
-        p { color: #94a3b8; line-height: 1.6; margin-bottom: 25px; }
-        .icon { font-size: 60px; margin-bottom: 20px; display: block; }
-        .status-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 20px;
-        }
-        .progress {
-            width: 50%;
-            height: 100%;
-            background: #10b981;
-            animation: load 2s infinite ease-in-out;
-        }
-        @keyframes load {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(200%); }
-        }
+        h1 { color: #ef4444; font-size: 28px; margin-bottom: 15px; text-transform: uppercase; }
+        p { color: #cbd5e1; font-size: 16px; line-height: 1.6; }
+        .emoji { font-size: 50px; margin-bottom: 15px; display: block; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <span class="icon">🛠️</span>
-        <h1>Em Manutenção</h1>
-        <p>Estamos trabalhando nos bastidores para polir a jogabilidade e eliminar alguns bugs. Em breve, a arena estará aberta novamente para você!</p>
-        <div class="status-bar"><div class="progress"></div></div>
+        <span class="emoji">🐍😵</span>
+        <h1>O jogo entortou!</h1>
+        <p>A gente tentou dar aquela melhorada no multiplayer, mas o código acabou se enrolando todo e o jogo deu um bug.</p>
+        <p>Estou aqui na correria pra desatar esses nós e colocar a arena de volta nos eixos. Já já a gente volta ao normal!</p>
     </div>
 
 </body>
