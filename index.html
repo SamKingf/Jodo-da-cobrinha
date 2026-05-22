@@ -1458,30 +1458,15 @@
         }
 
         function triggerGameOver() {
-            over = true; 
-            started = false;
-            clearInterval(mTimer); 
-            clearInterval(rTimer); 
-            clearPassiveTimers(); 
-            bgMusic.pause();
-
-            saveGlobalScore(score);
+            over = true; started = false;
+            clearInterval(mTimer); clearInterval(rTimer); clearPassiveTimers(); bgMusic.pause();
+            
+            saveGlobalScore(score); // Salva no Firebase a pontuação de morte (Solo)
 
             finalScore.innerText = score;
             finalTime.innerText = format(Date.now() - startMatch);
             gameOverModal.style.display = "block";
-         }
-
-         function saveGlobalScore(score) {
-
-             const nome = prompt("Digite seu nome:");
-
-             push(ref(db, "scores"), {
-                 nome: nome,
-                 score: score
-             });
-
-         }
+        }
 
         function restartGame(goToMenu = false) {
             gameOverModal.style.display = "none"; victoryModal.style.display = "none";
@@ -1528,36 +1513,5 @@
             if (updateMarquee) updateMarquee.style.display = 'none';
         }, 12000);
     </script>
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-  getDatabase,
-  ref,
-  push,
-  onValue
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCzpjTiIGzIPrLjgCCLJDb1HW260gjxloE",
-  authDomain: "jogo-da-cobrinha-de1c1.firebaseapp.com",
-  databaseURL: "https://jogo-da-cobrinha-de1c1-default-rtdb.firebaseio.com",
-  projectId: "jogo-da-cobrinha-de1c1",
-  storageBucket: "jogo-da-cobrinha-de1c1.firebasestorage.app",
-  messagingSenderId: "456703044496",
-  appId: "1:456703044496:web:3c4874f60f90e205dea115"
-};
-
-const app = initializeApp(firebaseConfig);
-
-const db = getDatabase(app);
-
-window.db = db;
-window.ref = ref;
-window.push = push;
-window.onValue = onValue;
-
-</script>
 </body>
 </html>
