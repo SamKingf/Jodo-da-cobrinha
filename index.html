@@ -874,9 +874,34 @@
 
         function spawn() { 
             const margin = isMobile ? 30 : 60;
+            let newX, newY;
+            let isOnSnake;
+
+            do {
+                isOnSnake = false;
+                newX = Math.random() * (canvas.width - margin * 2) + margin;
+                newY = Math.random() * (canvas.height - margin * 2) + margin;
+
+                for (let i = 0; i < path.length; i++) {
+                    if (Math.hypot(path[i].x - newX, path[i].y - newY) < size) {
+                        isOnSnake = true;
+                        break;
+                    }
+                }
+
+                if (!isOnSnake && (gameMode === 'multiplayer' || gameMode === 'arena')) {
+                    for (let i = 0; i < p2_path.length; i++) {
+                        if (Math.hypot(p2_path[i].x - newX, p2_path[i].y - newY) < size) {
+                            isOnSnake = true;
+                            break;
+                        }
+                    }
+                }
+            } while (isOnSnake);
+
             return { 
-                x: Math.random() * (canvas.width - margin * 2) + margin, 
-                y: Math.random() * (canvas.height - margin * 2) + margin 
+                x: newX, 
+                y: newY 
             }; 
         }
 
